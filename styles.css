@@ -876,6 +876,116 @@ h2 {
   max-width: 18ch;
 }
 
+.supply-trend {
+  display: grid;
+  grid-template-columns: minmax(180px, 0.32fr) minmax(0, 1fr);
+  gap: 18px;
+  align-items: center;
+  margin-bottom: 22px;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--panel);
+  box-shadow: var(--shadow-soft);
+}
+
+.supply-trend p {
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.supply-trend-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.supply-trend-item {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--purple-soft);
+}
+
+.supply-trend-item.is-good {
+  border-color: rgba(46, 184, 170, 0.32);
+  background: var(--teal-soft);
+}
+
+.supply-trend-item.is-ok {
+  border-color: rgba(132, 91, 238, 0.28);
+  background: var(--purple-soft);
+}
+
+.supply-trend-item.is-low {
+  border-color: rgba(238, 42, 123, 0.3);
+  background: var(--pink-soft);
+}
+
+.supply-trend-item.is-empty {
+  background: #f7f5fb;
+}
+
+.supply-icon {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  color: var(--navy-ink);
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.supply-icon svg {
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.9;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.supply-copy {
+  min-width: 0;
+}
+
+.supply-copy strong,
+.supply-copy small,
+.supply-count {
+  display: block;
+}
+
+.supply-copy strong {
+  color: var(--navy-ink);
+  font-size: 0.95rem;
+}
+
+.supply-copy small,
+.supply-count {
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.supply-copy small {
+  margin-top: 2px;
+  font-size: 0.78rem;
+}
+
+.supply-count {
+  grid-column: 2;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
 .recovery-context-card,
 .recovery-card {
   border: 1px solid var(--line);
@@ -1150,6 +1260,7 @@ h2 {
 @media (max-width: 820px) {
   .masthead,
   .recovery-masthead,
+  .supply-trend,
   .target-strip,
   .section-heading {
     flex-direction: column;
@@ -1158,6 +1269,11 @@ h2 {
 
   .masthead,
   .recovery-masthead {
+    grid-template-columns: 1fr;
+  }
+
+  .supply-trend,
+  .supply-trend-grid {
     grid-template-columns: 1fr;
   }
 

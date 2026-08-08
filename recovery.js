@@ -19,6 +19,8 @@ const selectors = {
   latestTitle: document.querySelector("#latest-recovery-title"),
   latestContext: document.querySelector("#latest-recovery-context"),
   latestNote: document.querySelector("#latest-recovery-note"),
+  supplyTrend: document.querySelector("#supply-trend-grid"),
+  supplyTrendNote: document.querySelector("#supply-trend-note"),
   monthGrid: document.querySelector("#recovery-month-grid"),
   weekGrid: document.querySelector("#recovery-week-grid"),
   logList: document.querySelector("#recovery-log-list"),
@@ -167,6 +169,109 @@ function summarise(entries, startDate, endDate) {
     sleep: scores.reduce((total, score) => total + score.sleep, 0),
     total: scores.reduce((total, score) => total + score.total, 0),
   };
+}
+
+function getActiveWeek(weeks) {
+  const currentDay = todayString();
+  return (
+    weeks.find((week) => isBetween(currentDay, week.startDate, week.endDate)) ||
+    weeks.find((week) => currentDay < week.startDate) ||
+    weeks[weeks.length - 1]
+  );
+}
+
+function iconMarkup(type) {
+  const icons = {
+    hydration: `
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M12 3.5S6.5 10 6.5 14.5a5.5 5.5 0 0 0 11 0C17.5 10 12 3.5 12 3.5Z"></path>
+      </svg>
+    `,
+    food: `
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M6 3v8"></path>
+        <path d="M10 3v8"></path>
+        <path d="M6 7h4"></path>
+        <path d="M8 11v10"></path>
+        <path d="M17 3v18"></path>
+        <path d="M14 3c0 4.5 1 7 3 7"></path>
+      </svg>
+    `,
+    sleep: `
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M4 11V6"></path>
+        <path d="M4 17v-6h16a2 2 0 0 1 2 2v4"></path>
+        <path d="M4 17h18"></path>
+        <path d="M8 11V8h5a2 2 0 0 1 2 2v1"></path>
+      </svg>
+    `,
+  };
+
+  return icons[type] || "";
+}
+
+function trendStatus(done, loggedDays) {
+  if (!loggedDays) {
+    return {
+      className: "empty",
+      label: "No data yet",
+      detail: "not logged",
+    };
+  }
+
+  const ratio = done / loggedDays;
+  if (ratio >= 0.8) {
+    return {
+      className: "good",
+      label: "Steady",
+      detail: `${done}/${loggedDays} logged`,
+    };
+  }
+
+  if (ratio >= 0.5) {
+    return {
+      className: "ok",
+      label: "Okay-ish",
+      detail: `${done}/${loggedDays} logged`,
+    };
+  }
+
+  return {
+    className: "low",
+    label: "Needs a nudge",
+    detail: `${done}/${loggedDays} logged`,
+  };
+}
+
+function renderSupplyTrend(entries, weeks) {
+  const activeWeek = getActiveWeek(weeks);
+  const summary = summarise(entries, activeWeek.startDate, activeWeek.endDate);
+  const loggedDays = summary.entries.length;
+  const metrics = [
+    ["hydration", "Water", summary.hydration],
+    ["food", "Food", summary.food],
+    ["sleep", "Sleep", summary.sleep],
+  ];
+
+  selectors.supplyTrend.textContent = "";
+  selectors.supplyTrendNote.textContent = loggedDays
+    ? `Based on ${loggedDays} logged check-in${loggedDays === 1 ? "" : "s"} this week.`
+    : "Based on logged check-ins this week.";
+
+  for (const [type, label, done] of metrics) {
+    const status = trendStatus(done, loggedDays);
+    const item = document.createElement("article");
+    item.className = `supply-trend-item ${type} is-${status.className}`;
+    item.innerHTML = `
+      <span class="supply-icon">${iconMarkup(type)}</span>
+      <span class="supply-copy">
+        <strong>${label}</strong>
+        <small>${status.label}</small>
+      </span>
+      <span class="supply-count">${status.detail}</span>
+    `;
+    selectors.supplyTrend.append(item);
+  }
 }
 
 function barMarkup(label, done, target, variant) {
@@ -383,6 +488,7 @@ function deleteEntryForDate(date) {
 function renderPage() {
   const weeks = getWeeks();
 
+  renderSupplyTrend(recoveryEntries, weeks);
   renderDaily(recoveryEntries);
   renderLatest(recoveryEntries);
   renderMonths(recoveryEntries);
