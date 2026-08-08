@@ -14,12 +14,9 @@ const DAILY_ANCHORS = 3;
 const selectors = {
   weekScore: document.querySelector("#recovery-week-score"),
   weekNote: document.querySelector("#recovery-week-note"),
-  hydrationDone: document.querySelector("#hydration-done"),
-  hydrationTarget: document.querySelector("#hydration-target"),
-  foodDone: document.querySelector("#food-done"),
-  foodTarget: document.querySelector("#food-target"),
-  sleepDone: document.querySelector("#sleep-done"),
-  sleepTarget: document.querySelector("#sleep-target"),
+  dailyTitle: document.querySelector("#daily-support-title-text"),
+  dailyNote: document.querySelector("#daily-support-note"),
+  dailyGrid: document.querySelector("#daily-support-grid"),
   latestTitle: document.querySelector("#latest-recovery-title"),
   latestContext: document.querySelector("#latest-recovery-context"),
   latestNote: document.querySelector("#latest-recovery-note"),
@@ -134,13 +131,6 @@ function summarise(entries, startDate, endDate) {
   };
 }
 
-function setRecoveryRing(name, done, target) {
-  const ring = document.querySelector(`[data-recovery-ring="${name}"]`);
-  if (!ring) return;
-  const degrees = target ? Math.min(done / target, 1) * 360 : 0;
-  ring.style.setProperty("--progress", `${degrees}deg`);
-}
-
 function barMarkup(label, done, target, variant) {
   const width = target ? Math.min((done / target) * 100, 100) : 0;
   return `
@@ -151,19 +141,41 @@ function barMarkup(label, done, target, variant) {
   `;
 }
 
-function renderBlock(entries) {
-  const block = summarise(entries, BLOCK.startDate, BLOCK.endDate);
+function renderDaily(entries) {
+  const todayString = today().toISOString().slice(0, 10);
+  const entry = entries.find((item) => item.date === todayString) || entries[0];
+  selectors.dailyGrid.textContent = "";
 
-  selectors.hydrationDone.textContent = block.hydration;
-  selectors.foodDone.textContent = block.food;
-  selectors.sleepDone.textContent = block.sleep;
-  selectors.hydrationTarget.textContent = `/${block.days}`;
-  selectors.foodTarget.textContent = `/${block.days}`;
-  selectors.sleepTarget.textContent = `/${block.days}`;
+  if (!entry) {
+    selectors.dailyTitle.textContent = "No check-in yet";
+    selectors.dailyNote.textContent = "Daily support is scored out of 3: hydration, food, and sleep/recovery.";
+    for (const label of ["Hydration", "Food", "Sleep"]) {
+      const item = document.createElement("div");
+      item.innerHTML = `<span>${label}</span><strong>not logged</strong>`;
+      selectors.dailyGrid.append(item);
+    }
+    return;
+  }
 
-  setRecoveryRing("hydration", block.hydration, block.days);
-  setRecoveryRing("food", block.food, block.days);
-  setRecoveryRing("sleep", block.sleep, block.days);
+  const score = scoreEntry(entry);
+  const isToday = entry.date === todayString;
+  selectors.dailyTitle.textContent = `${score.total}/3 support anchors`;
+  selectors.dailyNote.textContent = isToday
+    ? "Today has been logged. Tiny sensible protagonist behaviour."
+    : `Showing latest check-in from ${formatDate(entry.date, { weekday: "short" })}.`;
+
+  const anchors = [
+    ["Hydration", entry.hydration, score.hydration],
+    ["Food", entry.foodConsistent || entry.meals >= 3 ? "anchored" : "needs a nudge", score.food],
+    ["Sleep", entry.sleep, score.sleep],
+  ];
+
+  for (const [label, value, done] of anchors) {
+    const item = document.createElement("div");
+    item.className = done ? "is-done" : "";
+    item.innerHTML = `<span>${label}</span><strong>${value}</strong>`;
+    selectors.dailyGrid.append(item);
+  }
 }
 
 function renderCurrentWeek(entries, weeks) {
@@ -289,7 +301,7 @@ async function init() {
   const { entries, updatedAt } = await loadRecoveryEntries();
   const weeks = getWeeks();
 
-  renderBlock(entries);
+  renderDaily(entries);
   renderCurrentWeek(entries, weeks);
   renderLatest(entries);
   renderMonths(entries);

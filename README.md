@@ -42,9 +42,10 @@ Extra sessions can still be logged manually in `data/manual-sessions.json`:
 ```
 
 Recovery check-ins live in `data/recovery-log.json` and power
-`recovery.html`. The recovery page scores three daily anchors: hydration,
-food consistency, and sleep/recovery. Energy, soreness, stress, and notes are
-shown as context.
+`recovery.html`. The recovery page leads with a daily support score out of
+three: hydration, food consistency, and sleep/recovery. Weekly and monthly
+sections roll those anchors up so the trend is visible without turning recovery
+into homework. Energy, soreness, stress, and notes are shown as context.
 
 ```json
 {

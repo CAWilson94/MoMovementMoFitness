@@ -466,18 +466,6 @@ h1 {
   --ring-color: var(--purple);
 }
 
-.ring-hydration {
-  --ring-color: var(--teal);
-}
-
-.ring-food {
-  --ring-color: var(--pink);
-}
-
-.ring-sleep {
-  --ring-color: var(--purple);
-}
-
 .bonus-ring-card .ring small {
   font-size: 0.86rem;
 }
@@ -893,10 +881,6 @@ h2 {
   background: var(--purple);
 }
 
-.recovery-rings {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-}
-
 .context-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -929,6 +913,54 @@ h2 {
 .context-grid strong {
   margin-top: 4px;
   font-size: 0.95rem;
+}
+
+.daily-support-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid var(--line);
+}
+
+.daily-support-grid div {
+  min-width: 0;
+  padding: 16px 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--panel);
+}
+
+.daily-support-grid div:nth-child(1).is-done {
+  background: var(--teal-soft);
+}
+
+.daily-support-grid div:nth-child(2).is-done {
+  background: var(--pink-soft);
+}
+
+.daily-support-grid div:nth-child(3).is-done {
+  background: var(--purple-soft);
+}
+
+.daily-support-grid span,
+.daily-support-grid strong {
+  display: block;
+}
+
+.daily-support-grid span {
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.daily-support-grid strong {
+  margin-top: 6px;
+  font-size: clamp(1rem, 2vw, 1.25rem);
+  line-height: 1.15;
 }
 
 .recovery-card p {
@@ -1020,7 +1052,8 @@ h2 {
     width: min(100%, 420px);
   }
 
-  .recovery-rings {
+  .daily-support-grid,
+  .context-grid {
     grid-template-columns: 1fr;
   }
 }
