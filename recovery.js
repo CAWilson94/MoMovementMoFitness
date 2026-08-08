@@ -71,6 +71,9 @@ const selectors = {
   latestTitle: document.querySelector("#latest-recovery-title"),
   latestContext: document.querySelector("#latest-recovery-context"),
   latestNote: document.querySelector("#latest-recovery-note"),
+  recoveryChart: document.querySelector("#recovery-chart"),
+  recoveryChartSummary: document.querySelector("#recovery-chart-summary"),
+  recoveryChartMeta: document.querySelector("#recovery-chart-meta"),
   supplyTrend: document.querySelector("#supply-trend-grid"),
   supplyTrendNote: document.querySelector("#supply-trend-note"),
   weeklyReviewWeek: document.querySelector("#weekly-review-week"),
@@ -241,6 +244,13 @@ function scoreEntry(entry) {
   };
 }
 
+function readinessScore(entry) {
+  const support = scoreEntry(entry).total;
+  const bodyEnergy = entry.energy >= 3 ? 1 : 0;
+  const bodyLoad = entry.stress > 0 && entry.soreness > 0 && entry.stress <= 3 && entry.soreness <= 3 ? 1 : 0;
+  return support + bodyEnergy + bodyLoad;
+}
+
 function summarise(entries, startDate, endDate) {
   const scoped = entries.filter((entry) => isBetween(entry.date, startDate, endDate));
   const days = daysInclusive(startDate, endDate);
@@ -255,6 +265,77 @@ function summarise(entries, startDate, endDate) {
     sleep: scores.reduce((total, score) => total + score.sleep, 0),
     total: scores.reduce((total, score) => total + score.total, 0),
   };
+}
+
+function renderRecoveryChart(entries) {
+  const chartEntries = [...entries].sort((a, b) => a.date.localeCompare(b.date));
+  selectors.recoveryChart.textContent = "";
+  selectors.recoveryChartMeta.textContent = "";
+
+  if (!chartEntries.length) {
+    selectors.recoveryChartSummary.textContent = "Log a couple of check-ins to draw the line.";
+    selectors.recoveryChart.innerHTML = `
+      <text x="380" y="108" text-anchor="middle" class="chart-empty-text">No recovery check-ins yet</text>
+      <text x="380" y="134" text-anchor="middle" class="chart-empty-subtext">Water, food, sleep, energy, soreness, and stress will shape this.</text>
+    `;
+    return;
+  }
+
+  const width = 760;
+  const height = 220;
+  const padding = { top: 24, right: 28, bottom: 36, left: 42 };
+  const plotWidth = width - padding.left - padding.right;
+  const plotHeight = height - padding.top - padding.bottom;
+  const maxScore = 5;
+  const scores = chartEntries.map((entry) => ({
+    date: entry.date,
+    score: readinessScore(entry),
+  }));
+  const xFor = (index) => padding.left + (scores.length === 1 ? plotWidth / 2 : (index / (scores.length - 1)) * plotWidth);
+  const yFor = (score) => padding.top + plotHeight - (score / maxScore) * plotHeight;
+  const points = scores.map((point, index) => `${xFor(index).toFixed(1)},${yFor(point.score).toFixed(1)}`).join(" ");
+  const areaPoints = `${padding.left},${padding.top + plotHeight} ${points} ${padding.left + plotWidth},${padding.top + plotHeight}`;
+  const latest = scores[scores.length - 1];
+  const averageScore = scores.reduce((total, point) => total + point.score, 0) / scores.length;
+  const firstLabel = formatDate(scores[0].date);
+  const lastLabel = formatDate(latest.date);
+
+  selectors.recoveryChartSummary.textContent = `${latest.score}/5 latest readiness · ${averageScore.toFixed(1)}/5 average`;
+  selectors.recoveryChartMeta.innerHTML = `
+    <span>${firstLabel}</span>
+    <span>Score combines support habits + body signal</span>
+    <span>${lastLabel}</span>
+  `;
+
+  const gridLines = [0, 1, 2, 3, 4, 5]
+    .map((score) => {
+      const y = yFor(score).toFixed(1);
+      return `
+        <line class="chart-grid-line" x1="${padding.left}" x2="${padding.left + plotWidth}" y1="${y}" y2="${y}"></line>
+        <text class="chart-axis-label" x="${padding.left - 16}" y="${Number(y) + 4}" text-anchor="end">${score}</text>
+      `;
+    })
+    .join("");
+  const dots = scores
+    .map((point, index) => {
+      const x = xFor(index).toFixed(1);
+      const y = yFor(point.score).toFixed(1);
+      return `<circle class="chart-dot" cx="${x}" cy="${y}" r="${index === scores.length - 1 ? 5 : 4}"><title>${formatDate(point.date, { weekday: "short" })}: ${point.score}/5</title></circle>`;
+    })
+    .join("");
+
+  selectors.recoveryChart.innerHTML = `
+    <defs>
+      <linearGradient id="readiness-fill" x1="0" x2="0" y1="0" y2="1">
+        <stop offset="0%" stop-color="#2eb8aa" stop-opacity="0.24"></stop>
+        <stop offset="100%" stop-color="#ee2a7b" stop-opacity="0.04"></stop>
+      </linearGradient>
+    </defs>
+    ${gridLines}
+    <polygon class="chart-area" points="${areaPoints}"></polygon>
+    <polyline class="chart-line" points="${points}"></polyline>
+    ${dots}
+  `;
 }
 
 function getActiveWeek(weeks) {
@@ -840,6 +921,7 @@ function renderPage() {
   const weeks = getWeeks();
 
   renderSupplyTrend(recoveryEntries, weeks);
+  renderRecoveryChart(recoveryEntries);
   renderWeeklyReview(weeks);
   renderNoteThemes(recoveryEntries, weeks);
   renderDaily(recoveryEntries);
