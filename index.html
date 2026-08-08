@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Charlotte's Movement Block</title>
+    <meta
+      name="description"
+      content="A personal training dashboard for Charlotte's August to October strength and running block."
+    >
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    >
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <nav class="page-nav" aria-label="Page sections">
+      <div class="nav-inner">
+        <a class="brand-link" href="#top" aria-label="Back to top">
+          <span class="brand-mark">
+            <img src="assets/quest-buddy.png" alt="">
+          </span>
+          <span>Fitness Campaign</span>
+        </a>
+        <div class="nav-links">
+          <a href="#dashboard">Dashboard</a>
+          <a href="#weeks">Weeks</a>
+          <a href="#goals">Goals</a>
+        </div>
+      </div>
+    </nav>
+
+    <main class="shell" id="top">
+      <header class="masthead">
+        <div>
+          <p class="eyebrow">10 Aug - 25 Oct 2026 · 26 Oct review</p>
+          <h1>The fitness campaign begins.</h1>
+          <p class="intro">
+            A practical little quest to build strength, endurance, recovery,
+            and mild main-character energy.
+          </p>
+          <div class="quest-meta" aria-label="Campaign details">
+            <span>Build: Strong Runner</span>
+            <span>Difficulty: Sensible but suspicious</span>
+            <span>Campaign: 11 weeks</span>
+          </div>
+        </div>
+        <figure class="hero-art" aria-label="Campaign rider illustration">
+          <img src="assets/campaign-rider.png?v=gainz-small" alt="">
+        </figure>
+      </header>
+
+      <section class="target-strip" aria-label="Block targets">
+        <div class="target-copy">
+          <p class="panel-label">Campaign objective</p>
+          <h2>Two lifts, three runs, eleven weeks.</h2>
+          <p class="target-note" id="pep-note">Tiny promise, repeated often.</p>
+        </div>
+        <div class="target-stats">
+          <div>
+            <strong>22</strong>
+            <span>gym sessions</span>
+          </div>
+          <div>
+            <strong>33</strong>
+            <span>runs</span>
+          </div>
+          <div>
+            <strong>11</strong>
+            <span>weeks</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="hero-grid" id="dashboard" aria-labelledby="dashboard-title">
+        <div class="hero-panel">
+          <p class="panel-label" id="dashboard-title">Campaign progress</p>
+          <div class="rings" aria-label="Overall progress rings">
+            <div class="ring-card">
+              <div class="ring" data-ring="total">
+                <span><strong id="total-done">0</strong><small>/55</small></span>
+              </div>
+              <p>Total sessions</p>
+            </div>
+            <div class="ring-card">
+              <div class="ring ring-gym" data-ring="gym">
+                <span><strong id="gym-done">0</strong><small>/22</small></span>
+              </div>
+              <p>Gym sessions</p>
+            </div>
+            <div class="ring-card">
+              <div class="ring ring-run" data-ring="run">
+                <span><strong id="run-done">0</strong><small>/33</small></span>
+              </div>
+              <p>Runs</p>
+            </div>
+          </div>
+        </div>
+
+        <aside class="status-panel" aria-label="Current week status">
+          <p class="panel-label">This week</p>
+          <h2 id="current-week-title">Loading...</h2>
+          <div class="mini-goals">
+            <div>
+              <span id="week-gym">0/2</span>
+              <small>Gym</small>
+            </div>
+            <div>
+              <span id="week-runs">0/3</span>
+              <small>Runs</small>
+            </div>
+            <div>
+              <span id="week-total">0/5</span>
+              <small>Total</small>
+            </div>
+          </div>
+          <p class="week-note" id="current-week-note">
+            Once your first activities are logged, this will show whether the
+            weekly minimum is on track.
+          </p>
+        </aside>
+      </section>
+
+      <section class="month-section" aria-labelledby="month-title">
+        <div class="section-heading">
+          <h2 id="month-title">Campaign acts</h2>
+          <p id="updated-label">Loading data...</p>
+        </div>
+        <div class="month-grid" id="month-grid"></div>
+      </section>
+
+      <section class="week-section" id="weeks" aria-labelledby="weeks-title">
+        <div class="section-heading">
+          <h2 id="weeks-title">Campaign map</h2>
+          <p>Minimum: 2 gym + 3 runs</p>
+        </div>
+        <div class="week-grid" id="week-grid"></div>
+      </section>
+
+      <section class="goals-section" id="goals" aria-labelledby="goals-title">
+        <div class="section-heading section-heading-left">
+          <h2 id="goals-title">Character sheet</h2>
+        </div>
+        <div class="goals-grid">
+          <article>
+            <h3>Training anchor</h3>
+            <p>
+              Complete 55 movement sessions across 11 weeks: 22 gym sessions
+              and 33 runs. Consistency is the main win.
+            </p>
+          </article>
+          <article>
+            <h3>Strength</h3>
+            <p>
+              Keep moving toward a 100kg squat while training full body:
+              squat, hinge, push, pull, core, single-leg work, and athletic
+              power.
+            </p>
+          </article>
+          <article>
+            <h3>Running</h3>
+            <p>
+              Run three times a week, including one run club session, and build
+              toward longer weekend runs without irritating old injury stuff.
+            </p>
+          </article>
+          <article>
+            <h3>Body and recovery</h3>
+            <p>
+              Gradually reduce body fat, eat more consistently, recover better,
+              and feel healthier without turning training into a second job.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section class="activity-section" aria-labelledby="activity-title">
+        <div class="section-heading">
+          <h2 id="activity-title">Adventure log</h2>
+          <p id="activity-summary">Loading sessions...</p>
+        </div>
+        <div class="activity-list" id="activity-list"></div>
+      </section>
+
+      <footer class="site-footer">
+        <p>Runs and gym sessions can refresh from Strava. Extra sessions can live in <code>data/manual-sessions.json</code>.</p>
+      </footer>
+    </main>
+
+    <script src="app.js" type="module"></script>
+  </body>
+</html>

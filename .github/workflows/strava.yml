@@ -1,0 +1,42 @@
+name: Update Strava run data
+
+on:
+  schedule:
+    - cron: "0 */6 * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Fetch runs from Strava
+        env:
+          STRAVA_CLIENT_ID: ${{ secrets.STRAVA_CLIENT_ID }}
+          STRAVA_CLIENT_SECRET: ${{ secrets.STRAVA_CLIENT_SECRET }}
+          STRAVA_REFRESH_TOKEN: ${{ secrets.STRAVA_REFRESH_TOKEN }}
+          START_DATE: "2026-08-10"
+          END_DATE: "2026-10-25"
+        run: node scripts/fetch-strava.mjs
+
+      - name: Commit updated run data
+        run: |
+          git config user.name "strava-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/strava-activities.json
+          if git diff --staged --quiet; then
+            echo "No changes to commit."
+          else
+            git commit -m "Update run data from Strava"
+            git push
+          fi
