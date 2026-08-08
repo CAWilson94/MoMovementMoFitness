@@ -899,16 +899,20 @@ h2 {
 .supply-trend-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 6px;
+  gap: 8px;
 }
 
 .supply-trend-item {
   display: grid;
-  justify-items: center;
-  gap: 6px;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 9px;
+  align-items: center;
   min-width: 0;
-  padding: 4px;
-  text-align: center;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: #fbfaff;
+  text-align: left;
 }
 
 .supply-trend-item.is-good {
@@ -934,36 +938,29 @@ h2 {
 .supply-icon {
   display: grid;
   place-items: center;
-  width: 54px;
-  height: 54px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
   color: var(--navy-ink);
-  border: 2px solid rgba(255, 255, 255, 0.75);
-  background:
-    radial-gradient(circle at 32% 28%, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.48) 52%, rgba(255, 255, 255, 0.26)),
-    rgba(255, 255, 255, 0.42);
-  box-shadow: inset 0 -8px 20px rgba(28, 27, 69, 0.08), 0 10px 22px -16px rgba(28, 27, 69, 0.55);
+  background: rgba(255, 255, 255, 0.78);
 }
 
 .supply-trend-item.is-good .supply-icon {
   color: #176c63;
-  border-color: rgba(46, 184, 170, 0.45);
 }
 
 .supply-trend-item.is-ok .supply-icon,
 .supply-trend-item.is-early .supply-icon {
   color: #4c3c9d;
-  border-color: rgba(132, 91, 238, 0.38);
 }
 
 .supply-trend-item.is-low .supply-icon {
   color: var(--pink-dark);
-  border-color: rgba(238, 42, 123, 0.42);
 }
 
 .supply-icon svg {
-  width: 25px;
-  height: 25px;
+  width: 17px;
+  height: 17px;
   fill: none;
   stroke: currentColor;
   stroke-width: 1.8;
@@ -975,7 +972,8 @@ h2 {
   min-width: 0;
 }
 
-.supply-copy strong {
+.supply-copy strong,
+.supply-copy small {
   display: block;
 }
 
@@ -985,6 +983,34 @@ h2 {
   font-weight: 800;
   letter-spacing: 0.05em;
   text-transform: uppercase;
+}
+
+.supply-copy small {
+  margin-top: 1px;
+  color: var(--muted);
+  font-size: 0.7rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.supply-status {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #d9d5e8;
+}
+
+.supply-trend-item.is-good .supply-status {
+  background: var(--teal);
+}
+
+.supply-trend-item.is-ok .supply-status,
+.supply-trend-item.is-early .supply-status {
+  background: var(--purple);
+}
+
+.supply-trend-item.is-low .supply-status {
+  background: var(--pink);
 }
 
 .recovery-context-card,

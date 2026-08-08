@@ -381,7 +381,9 @@ function renderSupplyTrend(entries, weeks) {
       <span class="supply-icon">${iconMarkup(type)}</span>
       <span class="supply-copy">
         <strong>${label}</strong>
+        <small>${status.label}</small>
       </span>
+      <span class="supply-status" aria-hidden="true"></span>
     `;
     selectors.supplyTrend.append(item);
   }
@@ -393,7 +395,9 @@ function renderSupplyTrend(entries, weeks) {
     <span class="supply-icon">${iconMarkup("body")}</span>
     <span class="supply-copy">
       <strong>Body</strong>
+      <small>${body.label}</small>
     </span>
+    <span class="supply-status" aria-hidden="true"></span>
   `;
   selectors.supplyTrend.append(bodyItem);
 }
