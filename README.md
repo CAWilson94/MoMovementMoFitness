@@ -41,6 +41,26 @@ Extra sessions can still be logged manually in `data/manual-sessions.json`:
 }
 ```
 
+Recovery check-ins live in `data/recovery-log.json` and power
+`recovery.html`. The recovery page scores three daily anchors: hydration,
+food consistency, and sleep/recovery. Energy, soreness, stress, and notes are
+shown as context.
+
+```json
+{
+  "date": "2026-08-10",
+  "hydration": "okay",
+  "meals": 3,
+  "foodConsistent": true,
+  "protein": true,
+  "sleep": "good",
+  "energy": 4,
+  "soreness": 2,
+  "stress": 2,
+  "note": "Felt surprisingly human."
+}
+```
+
 ## Strava setup
 
 Use the same GitHub repository secrets as the cycling tracker:

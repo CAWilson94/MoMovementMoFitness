@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Recovery Log · Charlotte's Movement Block</title>
+    <meta
+      name="description"
+      content="A recovery and consistency dashboard for Charlotte's August to October movement block."
+    >
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    >
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <nav class="page-nav" aria-label="Site sections">
+      <div class="nav-inner">
+        <a class="brand-link" href="index.html" aria-label="Back to campaign dashboard">
+          <span class="brand-mark">
+            <img src="assets/quest-buddy.png" alt="">
+          </span>
+          <span>Fitness Campaign</span>
+        </a>
+        <div class="nav-links">
+          <a href="index.html#dashboard">Dashboard</a>
+          <a href="index.html#weeks">Weeks</a>
+          <a href="recovery.html" aria-current="page">Recovery</a>
+          <a href="index.html#goals">Goals</a>
+        </div>
+      </div>
+    </nav>
+
+    <main class="shell recovery-shell">
+      <header class="recovery-masthead">
+        <div>
+          <p class="eyebrow">Recovery supplies</p>
+          <h1>Keep the campaign fed, watered, and vaguely sensible.</h1>
+          <p class="intro">
+            A low-drama check-in for hydration, food consistency, sleep, and
+            the tiny clues that training is being supported.
+          </p>
+        </div>
+        <aside class="recovery-status-card" aria-label="Recovery status">
+          <p class="panel-label">This week</p>
+          <strong id="recovery-week-score">0/21</strong>
+          <span id="recovery-week-note">Waiting for supplies.</span>
+        </aside>
+      </header>
+
+      <section class="recovery-grid" aria-labelledby="recovery-progress-title">
+        <div class="hero-panel recovery-panel">
+          <p class="panel-label" id="recovery-progress-title">Support score</p>
+          <div class="rings recovery-rings" aria-label="Recovery progress rings">
+            <div class="ring-card">
+              <div class="ring ring-hydration" data-recovery-ring="hydration">
+                <span><strong id="hydration-done">0</strong><small id="hydration-target">/77</small></span>
+              </div>
+              <p>Hydration</p>
+            </div>
+            <div class="ring-card">
+              <div class="ring ring-food" data-recovery-ring="food">
+                <span><strong id="food-done">0</strong><small id="food-target">/77</small></span>
+              </div>
+              <p>Food anchors</p>
+            </div>
+            <div class="ring-card">
+              <div class="ring ring-sleep" data-recovery-ring="sleep">
+                <span><strong id="sleep-done">0</strong><small id="sleep-target">/77</small></span>
+              </div>
+              <p>Sleep/recovery</p>
+            </div>
+          </div>
+        </div>
+
+        <aside class="status-panel recovery-context-card" aria-label="Latest recovery context">
+          <p class="panel-label">Latest check-in</p>
+          <h2 id="latest-recovery-title">No entries yet</h2>
+          <div class="context-grid" id="latest-recovery-context"></div>
+          <p class="week-note" id="latest-recovery-note">
+            Add entries to <code>data/recovery-log.json</code> when you want the
+            page to start scoring the support habits.
+          </p>
+        </aside>
+      </section>
+
+      <section class="month-section" aria-labelledby="recovery-month-title">
+        <div class="section-heading">
+          <h2 id="recovery-month-title">Monthly supplies</h2>
+          <p id="recovery-updated-label">Loading recovery data...</p>
+        </div>
+        <div class="month-grid" id="recovery-month-grid"></div>
+      </section>
+
+      <section class="week-section" aria-labelledby="recovery-week-title">
+        <div class="section-heading">
+          <h2 id="recovery-week-title">Weekly camp checks</h2>
+          <p>Hydration + food + sleep</p>
+        </div>
+        <div class="week-grid recovery-week-grid" id="recovery-week-grid"></div>
+      </section>
+
+      <section class="activity-section" aria-labelledby="recovery-log-title">
+        <div class="section-heading">
+          <h2 id="recovery-log-title">Recovery log</h2>
+          <p id="recovery-log-summary">Loading check-ins...</p>
+        </div>
+        <div class="activity-list" id="recovery-log-list"></div>
+      </section>
+
+      <footer class="site-footer">
+        <p>Recovery entries live in <code>data/recovery-log.json</code>.</p>
+      </footer>
+    </main>
+
+    <script src="recovery.js" type="module"></script>
+  </body>
+</html>
