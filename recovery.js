@@ -376,26 +376,24 @@ function renderSupplyTrend(entries, weeks) {
     const status = trendStatus(done, loggedDays);
     const item = document.createElement("article");
     item.className = `supply-trend-item supply-badge ${type} is-${status.className}`;
+    item.title = `${label}: ${status.label} (${status.detail})`;
     item.innerHTML = `
       <span class="supply-icon">${iconMarkup(type)}</span>
       <span class="supply-copy">
         <strong>${label}</strong>
-        <small>${status.label}</small>
       </span>
-      <span class="supply-count">${status.detail}</span>
     `;
     selectors.supplyTrend.append(item);
   }
 
   const bodyItem = document.createElement("article");
   bodyItem.className = `supply-trend-item supply-badge body is-${body.className}`;
+  bodyItem.title = `Body: ${body.label} (${body.detail})`;
   bodyItem.innerHTML = `
     <span class="supply-icon">${iconMarkup("body")}</span>
     <span class="supply-copy">
       <strong>Body</strong>
-      <small>${body.label}</small>
     </span>
-    <span class="supply-count">${body.detail}</span>
   `;
   selectors.supplyTrend.append(bodyItem);
 }

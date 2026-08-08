@@ -879,10 +879,10 @@ h2 {
 .supply-trend {
   display: grid;
   grid-template-columns: minmax(180px, 0.32fr) minmax(0, 1fr);
-  gap: 18px;
+  gap: 14px;
   align-items: center;
   margin-bottom: 22px;
-  padding: 18px;
+  padding: 14px 16px;
   border: 1px solid var(--line);
   border-radius: var(--radius);
   background: var(--panel);
@@ -899,15 +899,15 @@ h2 {
 .supply-trend-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 12px;
+  gap: 6px;
 }
 
 .supply-trend-item {
   display: grid;
   justify-items: center;
-  gap: 8px;
+  gap: 6px;
   min-width: 0;
-  padding: 8px 6px;
+  padding: 4px;
   text-align: center;
 }
 
@@ -934,11 +934,11 @@ h2 {
 .supply-icon {
   display: grid;
   place-items: center;
-  width: 68px;
-  height: 68px;
+  width: 54px;
+  height: 54px;
   border-radius: 50%;
   color: var(--navy-ink);
-  border: 3px solid rgba(255, 255, 255, 0.75);
+  border: 2px solid rgba(255, 255, 255, 0.75);
   background:
     radial-gradient(circle at 32% 28%, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.48) 52%, rgba(255, 255, 255, 0.26)),
     rgba(255, 255, 255, 0.42);
@@ -962,8 +962,8 @@ h2 {
 }
 
 .supply-icon svg {
-  width: 32px;
-  height: 32px;
+  width: 25px;
+  height: 25px;
   fill: none;
   stroke: currentColor;
   stroke-width: 1.8;
@@ -975,31 +975,15 @@ h2 {
   min-width: 0;
 }
 
-.supply-copy strong,
-.supply-copy small,
-.supply-count {
+.supply-copy strong {
   display: block;
 }
 
 .supply-copy strong {
   color: var(--navy-ink);
-  font-size: 0.95rem;
-}
-
-.supply-copy small,
-.supply-count {
-  color: var(--muted);
-  font-weight: 700;
-}
-
-.supply-copy small {
-  margin-top: 2px;
-  font-size: 0.78rem;
-}
-
-.supply-count {
-  font-size: 0.72rem;
-  letter-spacing: 0.06em;
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
 }
 
@@ -1399,6 +1383,6 @@ h2 {
   }
 
   .supply-trend-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
