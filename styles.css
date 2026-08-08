@@ -868,12 +868,26 @@ h2 {
 }
 
 .recovery-masthead {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 28px;
+  align-items: end;
   margin-bottom: 22px;
   padding: 8px 8px 0;
 }
 
 .recovery-masthead h1 {
   max-width: 18ch;
+}
+
+.recovery-masthead-action {
+  display: flex;
+  justify-content: flex-end;
+  padding-bottom: 4px;
+}
+
+.recovery-masthead-action .primary-action {
+  min-width: 214px;
 }
 
 .supply-trend {
@@ -1326,6 +1340,11 @@ h2 {
   .supply-trend,
   .recovery-masthead {
     grid-template-columns: 1fr;
+  }
+
+  .recovery-masthead-action {
+    justify-content: flex-start;
+    padding-bottom: 0;
   }
 
   .supply-trend-grid {
