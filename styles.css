@@ -1045,6 +1045,67 @@ h2 {
   background: var(--purple);
 }
 
+.weekly-review {
+  display: grid;
+  grid-template-columns: minmax(180px, 0.32fr) minmax(0, 1fr) auto;
+  gap: 16px;
+  align-items: center;
+  margin-bottom: 22px;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--panel);
+  box-shadow: var(--shadow-soft);
+}
+
+.weekly-review h2 {
+  margin-top: 4px;
+  font-size: clamp(1.25rem, 2.5vw, 1.65rem);
+}
+
+.weekly-review p {
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.weekly-review-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.weekly-review-grid div {
+  min-width: 0;
+  padding: 12px;
+  border-radius: var(--radius-sm);
+  background: var(--purple-soft);
+}
+
+.weekly-review-grid span,
+.weekly-review-grid strong {
+  display: block;
+}
+
+.weekly-review-grid span {
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.weekly-review-grid strong {
+  margin-top: 5px;
+  font-size: 0.92rem;
+  line-height: 1.35;
+}
+
+.weekly-review .secondary-action {
+  white-space: nowrap;
+}
+
 .note-themes {
   margin-top: 22px;
   padding: 20px;
@@ -1384,6 +1445,7 @@ h2 {
   .masthead,
   .recovery-masthead,
   .supply-trend,
+  .weekly-review,
   .target-strip,
   .section-heading {
     flex-direction: column;
@@ -1396,6 +1458,7 @@ h2 {
   }
 
   .supply-trend,
+  .weekly-review,
   .recovery-masthead {
     grid-template-columns: 1fr;
   }
@@ -1444,6 +1507,7 @@ h2 {
 
   .daily-support-grid,
   .context-grid,
+  .weekly-review-grid,
   .form-grid,
   .slider-grid {
     grid-template-columns: 1fr;

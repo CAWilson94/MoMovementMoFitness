@@ -11,6 +11,7 @@ const BLOCK = {
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
 const DAILY_ANCHORS = 3;
 const STORAGE_KEY = "movementTrackerRecoveryEntries";
+const REVIEW_STORAGE_KEY = "movementTrackerWeeklyReviews";
 const NOTE_STOP_WORDS = new Set([
   "a",
   "about",
@@ -72,6 +73,14 @@ const selectors = {
   latestNote: document.querySelector("#latest-recovery-note"),
   supplyTrend: document.querySelector("#supply-trend-grid"),
   supplyTrendNote: document.querySelector("#supply-trend-note"),
+  weeklyReviewWeek: document.querySelector("#weekly-review-week"),
+  weeklyReviewSummary: document.querySelector("#weekly-review-summary"),
+  weeklyReviewGrid: document.querySelector("#weekly-review-grid"),
+  openWeeklyReview: document.querySelector("#open-weekly-review-modal"),
+  weeklyReviewModal: document.querySelector("#weekly-review-modal"),
+  weeklyReviewForm: document.querySelector("#weekly-review-form"),
+  closeWeeklyReview: document.querySelector("#close-weekly-review-modal"),
+  deleteWeeklyReview: document.querySelector("#delete-weekly-review"),
   noteThemeCloud: document.querySelector("#note-theme-cloud"),
   noteThemesSummary: document.querySelector("#note-themes-summary"),
   monthGrid: document.querySelector("#recovery-month-grid"),
@@ -88,6 +97,7 @@ const selectors = {
 
 let recoveryEntries = [];
 let recoveryUpdatedAt = null;
+let weeklyReviews = [];
 
 function asDate(dateString) {
   return new Date(`${dateString}T12:00:00`);
@@ -160,6 +170,19 @@ function saveStoredEntries(entries) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(entries, null, 2));
 }
 
+function loadStoredReviews() {
+  try {
+    const reviews = JSON.parse(localStorage.getItem(REVIEW_STORAGE_KEY) || "[]");
+    return Array.isArray(reviews) ? reviews.map(normaliseReview).filter((review) => review.weekIndex) : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveStoredReviews(reviews) {
+  localStorage.setItem(REVIEW_STORAGE_KEY, JSON.stringify(reviews, null, 2));
+}
+
 function normaliseEntry(entry) {
   return {
     date: entry.date,
@@ -172,6 +195,16 @@ function normaliseEntry(entry) {
     soreness: Number(entry.soreness || 0),
     stress: Number(entry.stress || 0),
     note: entry.note || "",
+  };
+}
+
+function normaliseReview(review) {
+  return {
+    weekIndex: Number(review.weekIndex || 0),
+    worked: review.worked || "",
+    blocked: review.blocked || "",
+    tweak: review.tweak || "",
+    updatedAt: review.updatedAt || new Date().toISOString(),
   };
 }
 
@@ -455,6 +488,41 @@ function renderSupplyTrend(entries, weeks) {
   selectors.supplyTrend.append(bodyItem);
 }
 
+function reviewForWeek(weekIndex) {
+  return weeklyReviews.find((review) => review.weekIndex === weekIndex);
+}
+
+function activeWeekLabel(week) {
+  return `Week ${week.index}: ${formatDate(week.startDate)} - ${formatDate(week.endDate)}`;
+}
+
+function renderWeeklyReview(weeks) {
+  const activeWeek = getActiveWeek(weeks);
+  const review = reviewForWeek(activeWeek.index);
+  const fields = [
+    ["Worked", review?.worked],
+    ["Got in the way", review?.blocked],
+    ["Next tweak", review?.tweak],
+  ];
+
+  selectors.weeklyReviewWeek.textContent = activeWeekLabel(activeWeek);
+  selectors.weeklyReviewGrid.textContent = "";
+  selectors.openWeeklyReview.textContent = review ? "Edit weekly review" : "Add weekly review";
+  selectors.weeklyReviewSummary.textContent = review
+    ? `Saved ${new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short" }).format(new Date(review.updatedAt))}.`
+    : "A tiny reset point for what worked, what got in the way, and what to tweak next.";
+
+  for (const [label, value] of fields) {
+    const item = document.createElement("div");
+    const labelNode = document.createElement("span");
+    const valueNode = document.createElement("strong");
+    labelNode.textContent = label;
+    valueNode.textContent = value || "not reviewed yet";
+    item.append(labelNode, valueNode);
+    selectors.weeklyReviewGrid.append(item);
+  }
+}
+
 function noteWords(note) {
   return note
     .toLowerCase()
@@ -698,6 +766,22 @@ function openCheckIn(date = defaultCheckInDate()) {
   selectors.modal.showModal();
 }
 
+function fillWeeklyReviewForm(week) {
+  const review = reviewForWeek(week.index);
+  selectors.weeklyReviewForm.reset();
+  selectors.weeklyReviewForm.elements.weekIndex.value = week.index;
+  selectors.weeklyReviewForm.elements.worked.value = review?.worked || "";
+  selectors.weeklyReviewForm.elements.blocked.value = review?.blocked || "";
+  selectors.weeklyReviewForm.elements.tweak.value = review?.tweak || "";
+  selectors.deleteWeeklyReview.hidden = !review;
+}
+
+function openWeeklyReview() {
+  const week = getActiveWeek(getWeeks());
+  fillWeeklyReviewForm(week);
+  selectors.weeklyReviewModal.showModal();
+}
+
 function saveEntryFromForm() {
   const formData = new FormData(selectors.form);
   const entry = normaliseEntry({
@@ -722,10 +806,41 @@ function deleteEntryForDate(date) {
   saveStoredEntries(loadStoredEntries().filter((entry) => entry.date !== date));
 }
 
+function saveWeeklyReviewFromForm() {
+  const formData = new FormData(selectors.weeklyReviewForm);
+  const weekIndex = Number(formData.get("weekIndex"));
+  const worked = formData.get("worked").trim();
+  const blocked = formData.get("blocked").trim();
+  const tweak = formData.get("tweak").trim();
+
+  if (!worked && !blocked && !tweak) {
+    deleteWeeklyReviewForWeek(weekIndex);
+    return;
+  }
+
+  const review = normaliseReview({
+    weekIndex,
+    worked,
+    blocked,
+    tweak,
+    updatedAt: new Date().toISOString(),
+  });
+  const reviews = loadStoredReviews().filter((item) => item.weekIndex !== review.weekIndex);
+  reviews.push(review);
+  saveStoredReviews(reviews.sort((a, b) => a.weekIndex - b.weekIndex));
+  weeklyReviews = loadStoredReviews();
+}
+
+function deleteWeeklyReviewForWeek(weekIndex) {
+  saveStoredReviews(loadStoredReviews().filter((review) => review.weekIndex !== weekIndex));
+  weeklyReviews = loadStoredReviews();
+}
+
 function renderPage() {
   const weeks = getWeeks();
 
   renderSupplyTrend(recoveryEntries, weeks);
+  renderWeeklyReview(weeks);
   renderNoteThemes(recoveryEntries, weeks);
   renderDaily(recoveryEntries);
   renderLatest(recoveryEntries);
@@ -742,12 +857,15 @@ async function refreshEntries() {
   const { entries, updatedAt } = await loadRecoveryEntries();
   recoveryEntries = entries;
   recoveryUpdatedAt = updatedAt;
+  weeklyReviews = loadStoredReviews();
   renderPage();
 }
 
 function bindForm() {
   selectors.openModal.addEventListener("click", () => openCheckIn());
   selectors.closeModal.addEventListener("click", () => selectors.modal.close());
+  selectors.openWeeklyReview.addEventListener("click", openWeeklyReview);
+  selectors.closeWeeklyReview.addEventListener("click", () => selectors.weeklyReviewModal.close());
 
   selectors.form.elements.date.addEventListener("change", (event) => {
     fillForm(entryForDate(event.target.value) || { date: event.target.value });
@@ -768,6 +886,19 @@ function bindForm() {
     deleteEntryForDate(selectors.form.elements.date.value);
     selectors.modal.close();
     await refreshEntries();
+  });
+
+  selectors.weeklyReviewForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    saveWeeklyReviewFromForm();
+    selectors.weeklyReviewModal.close();
+    renderPage();
+  });
+
+  selectors.deleteWeeklyReview.addEventListener("click", () => {
+    deleteWeeklyReviewForWeek(Number(selectors.weeklyReviewForm.elements.weekIndex.value));
+    selectors.weeklyReviewModal.close();
+    renderPage();
   });
 }
 

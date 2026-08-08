@@ -59,6 +59,31 @@
         <div class="supply-trend-grid" id="supply-trend-grid" aria-label="Weekly recovery trend"></div>
       </section>
 
+      <section class="weekly-review" aria-labelledby="weekly-review-title">
+        <div>
+          <p class="panel-label" id="weekly-review-title">Week review</p>
+          <h2 id="weekly-review-week">This week</h2>
+          <p id="weekly-review-summary">A tiny reset point for what worked, what got in the way, and what to tweak next.</p>
+        </div>
+        <div class="weekly-review-grid" id="weekly-review-grid">
+          <div>
+            <span>Worked</span>
+            <strong>not reviewed yet</strong>
+          </div>
+          <div>
+            <span>Got in the way</span>
+            <strong>not reviewed yet</strong>
+          </div>
+          <div>
+            <span>Next tweak</span>
+            <strong>not reviewed yet</strong>
+          </div>
+        </div>
+        <button class="secondary-action" id="open-weekly-review-modal" type="button">
+          Add weekly review
+        </button>
+      </section>
+
       <section class="recovery-grid" aria-labelledby="daily-support-title">
         <div class="hero-panel recovery-panel">
           <p class="panel-label" id="daily-support-title">Daily support</p>
@@ -198,6 +223,40 @@
         <div class="modal-actions">
           <button class="secondary-action" id="delete-recovery-entry" type="button">Delete day</button>
           <button class="primary-action" type="submit">Save check-in</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog class="modal" id="weekly-review-modal" aria-labelledby="weekly-review-modal-title">
+      <form class="modal-panel" id="weekly-review-form" method="dialog">
+        <div class="modal-heading">
+          <div>
+            <p class="panel-label">Weekly review</p>
+            <h2 id="weekly-review-modal-title">What did this week teach you?</h2>
+          </div>
+          <button class="icon-button" id="close-weekly-review-modal" type="button" aria-label="Close weekly review">x</button>
+        </div>
+
+        <input name="weekIndex" type="hidden">
+
+        <label class="field">
+          <span>What worked?</span>
+          <textarea name="worked" rows="3" placeholder="Anything that helped, even if tiny."></textarea>
+        </label>
+
+        <label class="field">
+          <span>What got in the way?</span>
+          <textarea name="blocked" rows="3" placeholder="Stress, time, food, sleep, logistics, life."></textarea>
+        </label>
+
+        <label class="field">
+          <span>Small tweak for next week</span>
+          <textarea name="tweak" rows="3" placeholder="One boringly doable adjustment."></textarea>
+        </label>
+
+        <div class="modal-actions">
+          <button class="secondary-action" id="delete-weekly-review" type="button">Delete review</button>
+          <button class="primary-action" type="submit">Save weekly review</button>
         </div>
       </form>
     </dialog>
