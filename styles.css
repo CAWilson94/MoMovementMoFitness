@@ -924,6 +924,11 @@ h2 {
   background: var(--purple-soft);
 }
 
+.supply-trend-item.is-early {
+  border-color: rgba(132, 91, 238, 0.2);
+  background: var(--purple-soft);
+}
+
 .supply-trend-item.is-low {
   border-color: rgba(238, 42, 123, 0.3);
   background: var(--pink-soft);
@@ -1018,6 +1023,30 @@ h2 {
   padding: 12px;
   border-radius: var(--radius-sm);
   background: var(--purple-soft);
+}
+
+.context-grid .signal {
+  grid-column: 1 / -1;
+  border: 1px solid rgba(132, 91, 238, 0.2);
+}
+
+.context-grid .signal.is-good {
+  border-color: rgba(46, 184, 170, 0.32);
+  background: var(--teal-soft);
+}
+
+.context-grid .signal.is-ok {
+  border-color: rgba(132, 91, 238, 0.28);
+  background: var(--purple-soft);
+}
+
+.context-grid .signal.is-low {
+  border-color: rgba(238, 42, 123, 0.3);
+  background: var(--pink-soft);
+}
+
+.context-grid .signal.is-empty {
+  background: #f7f5fb;
 }
 
 .context-grid span,

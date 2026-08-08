@@ -219,6 +219,14 @@ function trendStatus(done, loggedDays) {
     };
   }
 
+  if (loggedDays < 3) {
+    return {
+      className: "early",
+      label: "Too early",
+      detail: `${loggedDays} check-in${loggedDays === 1 ? "" : "s"}`,
+    };
+  }
+
   const ratio = done / loggedDays;
   if (ratio >= 0.8) {
     return {
@@ -240,6 +248,55 @@ function trendStatus(done, loggedDays) {
     className: "low",
     label: "Needs a nudge",
     detail: `${done}/${loggedDays} logged`,
+  };
+}
+
+function bodySignal(entry) {
+  if (!entry?.energy && !entry?.soreness && !entry?.stress) {
+    return {
+      className: "empty",
+      label: "Body signal",
+      value: "not logged",
+      note: "Energy, soreness, and stress will show here once logged.",
+    };
+  }
+
+  const energy = entry.energy || 3;
+  const soreness = entry.soreness || 3;
+  const stress = entry.stress || 3;
+
+  if (stress >= 4) {
+    return {
+      className: "low",
+      label: "Body signal",
+      value: "recovery debt",
+      note: "Stress is high today, so treat that as a real recovery flag.",
+    };
+  }
+
+  if (energy >= 4 && soreness <= 2 && stress <= 2) {
+    return {
+      className: "good",
+      label: "Body signal",
+      value: "ready-ish",
+      note: "Energy is up and stress/soreness look manageable.",
+    };
+  }
+
+  if (energy <= 2 || soreness >= 4 || stress === 3) {
+    return {
+      className: "ok",
+      label: "Body signal",
+      value: "watch it",
+      note: "Not a panic, just worth making recovery easier today.",
+    };
+  }
+
+  return {
+    className: "ok",
+    label: "Body signal",
+    value: "manageable",
+    note: "Signals look workable. Keep an eye on stress first.",
   };
 }
 
@@ -328,22 +385,26 @@ function renderLatest(entries) {
   if (!latest) return;
 
   selectors.latestTitle.textContent = `${formatDate(latest.date, { weekday: "short" })}`;
+  const signal = bodySignal(latest);
   const contexts = [
+    [signal.label, signal.value, `signal is-${signal.className}`],
     ["Water", latest.hydration],
     ["Meals", latest.meals ? `${latest.meals}` : "not logged"],
     ["Protein", latest.protein ? "yes" : "not logged"],
     ["Sleep", latest.sleep],
     ["Energy", latest.energy ? `${latest.energy}/5` : "not logged"],
     ["Soreness", latest.soreness ? `${latest.soreness}/5` : "not logged"],
+    ["Stress", latest.stress ? `${latest.stress}/5` : "not logged"],
   ];
 
-  for (const [label, value] of contexts) {
+  for (const [label, value, className] of contexts) {
     const item = document.createElement("div");
+    if (className) item.className = className;
     item.innerHTML = `<span>${label}</span><strong>${value}</strong>`;
     selectors.latestContext.append(item);
   }
 
-  selectors.latestNote.textContent = latest.note || "Logged. No dramatic subplot recorded.";
+  selectors.latestNote.textContent = latest.note || signal.note;
 }
 
 function renderMonths(entries) {
