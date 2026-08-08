@@ -146,6 +146,10 @@ function fetchStartDate(existingActivities, startDate, endDate) {
   return previousDay.toISOString().slice(0, 10);
 }
 
+function todayDate() {
+  return new Date().toISOString().slice(0, 10);
+}
+
 function mergeSessions(existingSessions, fetchedSessions, startDate, endDate) {
   const sessionsById = new Map();
 
@@ -207,6 +211,21 @@ async function main() {
   const { startDate, endDate } = CONFIG;
   const existingPayload = await readExistingPayload(startDate, endDate);
   const fromDate = fetchStartDate(existingPayload.activities, startDate, endDate);
+  const today = todayDate();
+
+  if (fromDate > today) {
+    const payload = {
+      ...existingPayload,
+      updatedAt: new Date().toISOString(),
+      fetchFromDate: fromDate,
+      nextFetchEligibleDate: fromDate,
+    };
+
+    await writeFile(OUTPUT_PATH, `${JSON.stringify(payload, null, 2)}\n`, "utf8");
+    console.log(`No Strava fetch yet: next fetch date ${fromDate} is after today ${today}`);
+    return;
+  }
+
   const afterEpoch = Math.floor(new Date(`${fromDate}T00:00:00Z`).getTime() / 1000);
   const beforeEpoch = Math.floor(new Date(`${endDate}T23:59:59Z`).getTime() / 1000) + 86400;
 
