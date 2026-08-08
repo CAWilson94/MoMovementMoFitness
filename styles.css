@@ -377,7 +377,7 @@ h1 {
 
 .rings {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(128px, 1fr));
   gap: 0;
   width: 100%;
   margin-top: 28px;
@@ -453,6 +453,14 @@ h1 {
   --ring-color: var(--pink);
 }
 
+.ring-ride {
+  --ring-color: var(--purple);
+}
+
+.bonus-ring-card .ring small {
+  font-size: 0.86rem;
+}
+
 .status-panel h2 {
   margin-top: 14px;
   font-size: clamp(1.65rem, 4vw, 2.3rem);
@@ -470,7 +478,7 @@ h1 {
 
 .mini-goals {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(74px, 1fr));
   gap: 0;
   margin-top: 26px;
   padding-top: 24px;
@@ -481,6 +489,10 @@ h1 {
   min-width: 0;
   padding: 0 10px;
   text-align: center;
+}
+
+.mini-goals .bonus-goal {
+  color: #4c3c9d;
 }
 
 .mini-goals div + div {
@@ -610,6 +622,11 @@ h2 {
   background: #eeecf2;
 }
 
+.bar-track.bonus {
+  height: 7px;
+  background: var(--purple-soft);
+}
+
 .bar-fill {
   width: 0%;
   height: 100%;
@@ -623,6 +640,10 @@ h2 {
 
 .bar-fill.run {
   background: var(--pink);
+}
+
+.bar-fill.ride {
+  background: var(--purple);
 }
 
 .week-grid {
@@ -671,6 +692,10 @@ h2 {
   margin-top: 12px;
 }
 
+.week-dots.has-rides {
+  grid-template-columns: repeat(auto-fit, minmax(8px, 1fr));
+}
+
 .dot {
   aspect-ratio: 1;
   border-radius: 50%;
@@ -683,6 +708,10 @@ h2 {
 
 .dot.done.run {
   background: var(--pink);
+}
+
+.dot.done.ride {
+  background: var(--purple);
 }
 
 .goals-grid {
@@ -744,6 +773,11 @@ h2 {
 .pill.gym {
   color: #176c63;
   background: var(--teal-soft);
+}
+
+.pill.ride {
+  color: #4c3c9d;
+  background: var(--purple-soft);
 }
 
 .site-footer {

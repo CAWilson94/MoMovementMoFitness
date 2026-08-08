@@ -1,4 +1,4 @@
-// Fetches runs and gym sessions from Strava and writes data/strava-activities.json.
+// Fetches campaign activities from Strava and writes data/strava-activities.json.
 
 import { writeFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
@@ -14,6 +14,7 @@ const CONFIG = {
 
 const RUN_TYPES = new Set(["Run", "TrailRun"]);
 const GYM_TYPES = new Set(["WeightTraining", "Workout"]);
+const RIDE_TYPES = new Set(["Ride", "MountainBikeRide", "GravelRide", "VirtualRide", "EBikeRide", "EMountainBikeRide"]);
 const METRES_PER_MILE = 1609.344;
 
 function requireEnv(name) {
@@ -133,10 +134,24 @@ function toGym(activity) {
   };
 }
 
+function toRide(activity) {
+  return {
+    id: activity.id,
+    title: activity.name || "Ride",
+    date: activityDate(activity),
+    type: "ride",
+    distanceMiles: round(activity.distance / METRES_PER_MILE, 1),
+    movingSeconds: activitySeconds(activity, "moving_time", "elapsed_time"),
+    source: "strava",
+    url: activityUrl(activity),
+  };
+}
+
 function toSession(activity) {
   const type = activity.sport_type || activity.type;
   if (RUN_TYPES.has(type)) return toRun(activity);
   if (GYM_TYPES.has(type)) return toGym(activity);
+  if (RIDE_TYPES.has(type)) return toRide(activity);
   return null;
 }
 
@@ -149,7 +164,10 @@ async function main() {
   const activities = await fetchActivities(accessToken, afterEpoch, beforeEpoch);
 
   const sessions = activities
-    .filter((activity) => RUN_TYPES.has(activity.sport_type || activity.type) || GYM_TYPES.has(activity.sport_type || activity.type))
+    .filter((activity) => {
+      const type = activity.sport_type || activity.type;
+      return RUN_TYPES.has(type) || GYM_TYPES.has(type) || RIDE_TYPES.has(type);
+    })
     .filter((activity) => {
       const day = activityDate(activity);
       return day >= startDate && day <= endDate;
