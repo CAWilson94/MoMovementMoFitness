@@ -188,7 +188,7 @@ function renderDaily(entries) {
 
   if (!entry) {
     selectors.dailyTitle.textContent = "No check-in yet";
-    selectors.dailyNote.textContent = "Daily support is scored out of 3: hydration, food, and sleep/recovery.";
+    selectors.dailyNote.textContent = "Daily support has 3 possible points: hydration, food, and sleep/recovery.";
     for (const label of ["Hydration", "Food", "Sleep"]) {
       const item = document.createElement("div");
       item.innerHTML = `<span>${label}</span><strong>not logged</strong>`;
@@ -199,10 +199,10 @@ function renderDaily(entries) {
 
   const score = scoreEntry(entry);
   const isToday = entry.date === currentDay;
-  selectors.dailyTitle.textContent = `${score.total}/3 support anchors`;
+  selectors.dailyTitle.textContent = `${score.total}/3 daily support points`;
   selectors.dailyNote.textContent = isToday
-    ? "Today has been logged. Tiny sensible protagonist behaviour."
-    : `Showing latest check-in from ${formatDate(entry.date, { weekday: "short" })}.`;
+    ? "1 point each for hydration, food, and sleep/recovery."
+    : `Showing latest check-in from ${formatDate(entry.date, { weekday: "short" })}. 1 point each for hydration, food, and sleep/recovery.`;
 
   const anchors = [
     ["Hydration", entry.hydration, score.hydration],
@@ -226,15 +226,15 @@ function renderCurrentWeek(entries, weeks) {
     weeks[weeks.length - 1];
   const summary = summarise(entries, activeWeek.startDate, activeWeek.endDate);
 
-  selectors.weekScore.textContent = `${summary.total}/${summary.target}`;
+  selectors.weekScore.textContent = `${summary.total} pts`;
   if (!summary.entries.length) {
-    selectors.weekNote.textContent = "No camp supplies logged yet.";
+    selectors.weekNote.textContent = `0 of ${summary.target} possible support points logged this week.`;
   } else if (summary.total >= summary.target * 0.75) {
-    selectors.weekNote.textContent = "Supplies are looking suspiciously competent.";
+    selectors.weekNote.textContent = `${summary.total} of ${summary.target} weekly support points. Suspiciously competent.`;
   } else if (summary.total >= summary.target * 0.45) {
-    selectors.weekNote.textContent = "Some support is in. Keep the basics boring.";
+    selectors.weekNote.textContent = `${summary.total} of ${summary.target} weekly support points. Keep the basics boring.`;
   } else {
-    selectors.weekNote.textContent = "Tiny refill quest: water, food, sleep.";
+    selectors.weekNote.textContent = `${summary.total} of ${summary.target} weekly support points. Tiny refill quest: water, food, sleep.`;
   }
 }
 
@@ -274,7 +274,7 @@ function renderMonths(entries) {
       <h3>${month.name}</h3>
       <p>${summary.entries.length}/${summary.days} days logged</p>
       <div class="bar-group">
-        ${barMarkup("Support", summary.total, summary.target, "support")}
+        ${barMarkup("Support points", summary.total, summary.target, "support")}
         ${barMarkup("Hydration", summary.hydration, summary.days, "hydration")}
         ${barMarkup("Food", summary.food, summary.days, "food")}
         ${barMarkup("Sleep", summary.sleep, summary.days, "sleep")}
@@ -296,7 +296,7 @@ function renderWeeks(entries, weeks) {
     card.innerHTML = `
       <strong>Week ${week.index}</strong>
       <small>${formatDate(week.startDate)} - ${formatDate(week.endDate)}</small>
-      <div class="recovery-week-score">${summary.total}/${summary.target}</div>
+      <div class="recovery-week-score">${summary.total} of ${summary.target} pts</div>
       <div class="week-dots" aria-label="${summary.entries.length} recovery days logged">
         ${dotMarkup(summary.entries.length, 7)}
       </div>
@@ -326,7 +326,7 @@ function renderLog(entries) {
     card.className = "activity-card recovery-log-card";
     card.innerHTML = `
       <h3>${formatDate(entry.date, { weekday: "short" })}</h3>
-      <p>${score.total}/3 support anchors · water ${entry.hydration} · sleep ${entry.sleep}</p>
+      <p>${score.total}/3 support points · water ${entry.hydration} · sleep ${entry.sleep}</p>
       <div class="activity-meta">
         <span class="pill hydration">water</span>
         <span class="pill food">food</span>
