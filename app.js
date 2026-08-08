@@ -15,6 +15,7 @@ const BLOCK = {
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
 const TOTAL_TARGET = BLOCK.totalGymTarget + BLOCK.totalRunTarget;
 const TARGET_TYPES = new Set(["gym", "run"]);
+const RECOVERY_STORAGE_KEY = "movementTrackerRecoveryEntries";
 
 const selectors = {
   totalDone: document.querySelector("#total-done"),
@@ -33,6 +34,8 @@ const selectors = {
   activityList: document.querySelector("#activity-list"),
   activitySummary: document.querySelector("#activity-summary"),
   pepNote: document.querySelector("#pep-note"),
+  recoveryScore: document.querySelector("#dashboard-recovery-score"),
+  recoverySparkline: document.querySelector("#dashboard-recovery-sparkline"),
 };
 
 function asDate(dateString) {
@@ -133,6 +136,51 @@ async function loadSessions() {
   };
 }
 
+function normaliseRecoveryEntry(entry) {
+  return {
+    date: entry.date,
+    hydration: entry.hydration || "unknown",
+    meals: Number(entry.meals || 0),
+    foodConsistent: Boolean(entry.foodConsistent),
+    sleep: entry.sleep || "unknown",
+    energy: Number(entry.energy || 0),
+    soreness: Number(entry.soreness || 0),
+    stress: Number(entry.stress || 0),
+  };
+}
+
+function loadStoredRecoveryEntries() {
+  try {
+    const entries = JSON.parse(localStorage.getItem(RECOVERY_STORAGE_KEY) || "[]");
+    return Array.isArray(entries) ? entries : [];
+  } catch {
+    return [];
+  }
+}
+
+async function loadRecoveryEntries() {
+  const data = await loadJson("data/recovery-log.json", { entries: [] });
+  const entriesByDate = new Map();
+
+  for (const entry of [...(data.entries || []), ...loadStoredRecoveryEntries()]) {
+    const normalised = normaliseRecoveryEntry(entry);
+    if (normalised.date) entriesByDate.set(normalised.date, normalised);
+  }
+
+  return [...entriesByDate.values()]
+    .filter((entry) => entry.date && isBetween(entry.date, BLOCK.startDate, BLOCK.endDate))
+    .sort((a, b) => a.date.localeCompare(b.date));
+}
+
+function recoveryScore(entry) {
+  const hydration = ["okay", "great"].includes(entry.hydration) ? 1 : 0;
+  const food = entry.foodConsistent || entry.meals >= 3 ? 1 : 0;
+  const sleep = ["okay", "good", "great"].includes(entry.sleep) ? 1 : 0;
+  const energy = entry.energy >= 3 ? 1 : 0;
+  const bodyLoad = entry.stress > 0 && entry.soreness > 0 && entry.stress <= 3 && entry.soreness <= 3 ? 1 : 0;
+  return hydration + food + sleep + energy + bodyLoad;
+}
+
 function countSessions(sessions, startDate, endDate, type) {
   return sessions.filter((session) => {
     return session.type === type && isBetween(session.date, startDate, endDate);
@@ -144,6 +192,43 @@ function setRing(name, done, target) {
   if (!ring) return;
   const degrees = target ? Math.min(done / target, 1) * 360 : 0;
   ring.style.setProperty("--progress", `${degrees}deg`);
+}
+
+function renderDashboardRecovery(entries) {
+  selectors.recoverySparkline.textContent = "";
+
+  if (!entries.length) {
+    selectors.recoveryScore.textContent = "No check-ins yet";
+    selectors.recoverySparkline.innerHTML = `
+      <line class="sparkline-empty" x1="8" x2="142" y1="34" y2="34"></line>
+    `;
+    return;
+  }
+
+  const scores = entries.slice(-10).map((entry) => ({
+    date: entry.date,
+    score: recoveryScore(entry),
+  }));
+  const latest = scores[scores.length - 1];
+  const average = scores.reduce((total, point) => total + point.score, 0) / scores.length;
+  const width = 150;
+  const height = 44;
+  const pad = 6;
+  const plotWidth = width - pad * 2;
+  const plotHeight = height - pad * 2;
+  const xFor = (index) => pad + (scores.length === 1 ? plotWidth / 2 : (index / (scores.length - 1)) * plotWidth);
+  const yFor = (score) => pad + plotHeight - (score / 5) * plotHeight;
+  const points = scores.map((point, index) => `${xFor(index).toFixed(1)},${yFor(point.score).toFixed(1)}`).join(" ");
+  const latestX = xFor(scores.length - 1).toFixed(1);
+  const latestY = yFor(latest.score).toFixed(1);
+
+  selectors.recoveryScore.textContent = `${latest.score}/5 latest · ${average.toFixed(1)} avg`;
+  selectors.recoverySparkline.innerHTML = `
+    <polyline class="sparkline-line" points="${points}"></polyline>
+    <circle class="sparkline-dot" cx="${latestX}" cy="${latestY}" r="4">
+      <title>${formatDate(latest.date, { weekday: "short" })}: ${latest.score}/5</title>
+    </circle>
+  `;
 }
 
 function renderTotals(sessions) {
@@ -347,11 +432,15 @@ function renderActivities(sessions) {
 }
 
 async function init() {
-  const { sessions, updatedAt } = await loadSessions();
+  const [{ sessions, updatedAt }, recoveryEntries] = await Promise.all([
+    loadSessions(),
+    loadRecoveryEntries(),
+  ]);
   const weeks = getWeeks();
 
   renderTotals(sessions);
   renderCurrentWeek(sessions, weeks);
+  renderDashboardRecovery(recoveryEntries);
   renderMonths(sessions);
   renderWeeks(sessions, weeks);
   renderActivities(sessions);

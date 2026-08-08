@@ -565,6 +565,66 @@ h1 {
   text-transform: uppercase;
 }
 
+.dashboard-recovery-link {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 150px;
+  gap: 14px;
+  align-items: center;
+  margin-top: 22px;
+  padding: 13px 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  color: inherit;
+  background: #fbfaff;
+  text-decoration: none;
+}
+
+.dashboard-recovery-link span,
+.dashboard-recovery-link strong {
+  display: block;
+}
+
+.dashboard-recovery-link span {
+  color: var(--pink-dark);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.dashboard-recovery-link strong {
+  margin-top: 4px;
+  color: var(--navy-ink);
+  font-size: 0.9rem;
+  line-height: 1.2;
+}
+
+.dashboard-sparkline {
+  display: block;
+  width: 150px;
+  height: 44px;
+}
+
+.sparkline-empty {
+  stroke: #e7e2f0;
+  stroke-linecap: round;
+  stroke-width: 4;
+}
+
+.sparkline-line {
+  fill: none;
+  stroke: var(--teal);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 4;
+}
+
+.sparkline-dot {
+  fill: var(--panel);
+  stroke: var(--pink);
+  stroke-width: 3;
+}
+
 .week-note {
   margin-top: 24px;
   color: var(--muted);
@@ -1720,6 +1780,14 @@ h2 {
 
   .mini-goals div {
     padding: 0 6px;
+  }
+
+  .dashboard-recovery-link {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-sparkline {
+    width: 100%;
   }
 
   .supply-trend-grid {
