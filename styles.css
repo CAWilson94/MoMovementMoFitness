@@ -868,10 +868,6 @@ h2 {
 }
 
 .recovery-masthead {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(260px, 0.42fr);
-  gap: 28px;
-  align-items: stretch;
   margin-bottom: 22px;
   padding: 8px 8px 0;
 }
@@ -880,34 +876,12 @@ h2 {
   max-width: 18ch;
 }
 
-.recovery-status-card,
 .recovery-context-card,
 .recovery-card {
   border: 1px solid var(--line);
   border-radius: var(--radius);
   background: var(--panel);
   box-shadow: var(--shadow-soft);
-}
-
-.recovery-status-card {
-  display: grid;
-  align-content: center;
-  gap: 12px;
-  padding: 28px;
-  border-top: 4px solid var(--teal);
-}
-
-.recovery-status-card strong {
-  font-size: clamp(2.4rem, 6vw, 4rem);
-  font-weight: 800;
-  line-height: 1;
-  letter-spacing: -0.04em;
-}
-
-.recovery-status-card span {
-  color: var(--muted);
-  font-size: 0.95rem;
-  font-weight: 600;
 }
 
 .recovery-grid {

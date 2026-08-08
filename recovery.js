@@ -13,8 +13,6 @@ const DAILY_ANCHORS = 3;
 const STORAGE_KEY = "movementTrackerRecoveryEntries";
 
 const selectors = {
-  weekScore: document.querySelector("#recovery-week-score"),
-  weekNote: document.querySelector("#recovery-week-note"),
   dailyTitle: document.querySelector("#daily-support-title-text"),
   dailyNote: document.querySelector("#daily-support-note"),
   dailyGrid: document.querySelector("#daily-support-grid"),
@@ -218,26 +216,6 @@ function renderDaily(entries) {
   }
 }
 
-function renderCurrentWeek(entries, weeks) {
-  const now = today().toISOString().slice(0, 10);
-  const activeWeek =
-    weeks.find((week) => isBetween(now, week.startDate, week.endDate)) ||
-    weeks.find((week) => now < week.startDate) ||
-    weeks[weeks.length - 1];
-  const summary = summarise(entries, activeWeek.startDate, activeWeek.endDate);
-
-  selectors.weekScore.textContent = `${summary.total} pts`;
-  if (!summary.entries.length) {
-    selectors.weekNote.textContent = `0 of ${summary.target} possible support points logged this week.`;
-  } else if (summary.total >= summary.target * 0.75) {
-    selectors.weekNote.textContent = `${summary.total} of ${summary.target} weekly support points. Suspiciously competent.`;
-  } else if (summary.total >= summary.target * 0.45) {
-    selectors.weekNote.textContent = `${summary.total} of ${summary.target} weekly support points. Keep the basics boring.`;
-  } else {
-    selectors.weekNote.textContent = `${summary.total} of ${summary.target} weekly support points. Tiny refill quest: water, food, sleep.`;
-  }
-}
-
 function renderLatest(entries) {
   const latest = entries[0];
   selectors.latestContext.textContent = "";
@@ -406,7 +384,6 @@ function renderPage() {
   const weeks = getWeeks();
 
   renderDaily(recoveryEntries);
-  renderCurrentWeek(recoveryEntries, weeks);
   renderLatest(recoveryEntries);
   renderMonths(recoveryEntries);
   renderWeeks(recoveryEntries, weeks);
