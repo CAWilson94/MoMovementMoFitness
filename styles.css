@@ -898,62 +898,75 @@ h2 {
 
 .supply-trend-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 10px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
 }
 
 .supply-trend-item {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  gap: 10px;
-  align-items: center;
+  justify-items: center;
+  gap: 8px;
   min-width: 0;
-  padding: 12px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-sm);
-  background: var(--purple-soft);
+  padding: 8px 6px;
+  text-align: center;
 }
 
 .supply-trend-item.is-good {
-  border-color: rgba(46, 184, 170, 0.32);
-  background: var(--teal-soft);
+  color: #176c63;
 }
 
 .supply-trend-item.is-ok {
-  border-color: rgba(132, 91, 238, 0.28);
-  background: var(--purple-soft);
+  color: #4c3c9d;
 }
 
 .supply-trend-item.is-early {
-  border-color: rgba(132, 91, 238, 0.2);
-  background: var(--purple-soft);
+  color: #4c3c9d;
 }
 
 .supply-trend-item.is-low {
-  border-color: rgba(238, 42, 123, 0.3);
-  background: var(--pink-soft);
+  color: var(--pink-dark);
 }
 
 .supply-trend-item.is-empty {
-  background: #f7f5fb;
+  color: var(--muted);
 }
 
 .supply-icon {
   display: grid;
   place-items: center;
-  width: 38px;
-  height: 38px;
+  width: 68px;
+  height: 68px;
   border-radius: 50%;
   color: var(--navy-ink);
-  background: rgba(255, 255, 255, 0.72);
+  border: 3px solid rgba(255, 255, 255, 0.75);
+  background:
+    radial-gradient(circle at 32% 28%, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.48) 52%, rgba(255, 255, 255, 0.26)),
+    rgba(255, 255, 255, 0.42);
+  box-shadow: inset 0 -8px 20px rgba(28, 27, 69, 0.08), 0 10px 22px -16px rgba(28, 27, 69, 0.55);
+}
+
+.supply-trend-item.is-good .supply-icon {
+  color: #176c63;
+  border-color: rgba(46, 184, 170, 0.45);
+}
+
+.supply-trend-item.is-ok .supply-icon,
+.supply-trend-item.is-early .supply-icon {
+  color: #4c3c9d;
+  border-color: rgba(132, 91, 238, 0.38);
+}
+
+.supply-trend-item.is-low .supply-icon {
+  color: var(--pink-dark);
+  border-color: rgba(238, 42, 123, 0.42);
 }
 
 .supply-icon svg {
-  width: 22px;
-  height: 22px;
+  width: 32px;
+  height: 32px;
   fill: none;
   stroke: currentColor;
-  stroke-width: 1.9;
+  stroke-width: 1.8;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
@@ -985,7 +998,6 @@ h2 {
 }
 
 .supply-count {
-  grid-column: 2;
   font-size: 0.72rem;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -1302,8 +1314,12 @@ h2 {
   }
 
   .supply-trend,
-  .supply-trend-grid {
+  .recovery-masthead {
     grid-template-columns: 1fr;
+  }
+
+  .supply-trend-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .target-strip {
@@ -1380,5 +1396,9 @@ h2 {
 
   .mini-goals div {
     padding: 0 6px;
+  }
+
+  .supply-trend-grid {
+    grid-template-columns: 1fr;
   }
 }

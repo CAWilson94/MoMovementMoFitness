@@ -205,6 +205,12 @@ function iconMarkup(type) {
         <path d="M8 11V8h5a2 2 0 0 1 2 2v1"></path>
       </svg>
     `,
+    body: `
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M12 21s-7-4.35-7-10a4 4 0 0 1 7-2.65A4 4 0 0 1 19 11c0 5.65-7 10-7 10Z"></path>
+        <path d="M9 12h2l1-2 2 5 1-3h2"></path>
+      </svg>
+    `,
   };
 
   return icons[type] || "";
@@ -300,6 +306,56 @@ function bodySignal(entry) {
   };
 }
 
+function average(values) {
+  const logged = values.filter((value) => value > 0);
+  if (!logged.length) return 0;
+  return logged.reduce((total, value) => total + value, 0) / logged.length;
+}
+
+function weeklyBodySignal(entries) {
+  if (!entries.length) {
+    return {
+      className: "empty",
+      label: "No data yet",
+      detail: "not logged",
+    };
+  }
+
+  if (entries.length < 3) {
+    return {
+      className: "early",
+      label: "Too early",
+      detail: `${entries.length} check-in${entries.length === 1 ? "" : "s"}`,
+    };
+  }
+
+  const stress = average(entries.map((entry) => entry.stress));
+  const soreness = average(entries.map((entry) => entry.soreness));
+  const energy = average(entries.map((entry) => entry.energy));
+
+  if (stress >= 4 || (stress >= 3.5 && energy <= 2.5)) {
+    return {
+      className: "low",
+      label: "Recovery debt",
+      detail: `stress ${stress.toFixed(1)}/5`,
+    };
+  }
+
+  if (energy >= 3.7 && soreness <= 2.5 && stress <= 2.5) {
+    return {
+      className: "good",
+      label: "Ready-ish",
+      detail: `stress ${stress.toFixed(1)}/5`,
+    };
+  }
+
+  return {
+    className: "ok",
+    label: "Manageable",
+    detail: `stress ${stress.toFixed(1)}/5`,
+  };
+}
+
 function renderSupplyTrend(entries, weeks) {
   const activeWeek = getActiveWeek(weeks);
   const summary = summarise(entries, activeWeek.startDate, activeWeek.endDate);
@@ -309,6 +365,7 @@ function renderSupplyTrend(entries, weeks) {
     ["food", "Food", summary.food],
     ["sleep", "Sleep", summary.sleep],
   ];
+  const body = weeklyBodySignal(summary.entries);
 
   selectors.supplyTrend.textContent = "";
   selectors.supplyTrendNote.textContent = loggedDays
@@ -318,7 +375,7 @@ function renderSupplyTrend(entries, weeks) {
   for (const [type, label, done] of metrics) {
     const status = trendStatus(done, loggedDays);
     const item = document.createElement("article");
-    item.className = `supply-trend-item ${type} is-${status.className}`;
+    item.className = `supply-trend-item supply-badge ${type} is-${status.className}`;
     item.innerHTML = `
       <span class="supply-icon">${iconMarkup(type)}</span>
       <span class="supply-copy">
@@ -329,6 +386,18 @@ function renderSupplyTrend(entries, weeks) {
     `;
     selectors.supplyTrend.append(item);
   }
+
+  const bodyItem = document.createElement("article");
+  bodyItem.className = `supply-trend-item supply-badge body is-${body.className}`;
+  bodyItem.innerHTML = `
+    <span class="supply-icon">${iconMarkup("body")}</span>
+    <span class="supply-copy">
+      <strong>Body</strong>
+      <small>${body.label}</small>
+    </span>
+    <span class="supply-count">${body.detail}</span>
+  `;
+  selectors.supplyTrend.append(bodyItem);
 }
 
 function barMarkup(label, done, target, variant) {
