@@ -51,37 +51,35 @@
         </div>
       </header>
 
-      <section class="supply-trend" aria-labelledby="supply-trend-title">
-        <div>
-          <p class="panel-label" id="supply-trend-title">Current week trend</p>
+      <section class="week-summary" aria-labelledby="weekly-review-title">
+        <div class="week-summary-heading">
+          <div>
+            <p class="panel-label" id="weekly-review-title">This week</p>
+            <h2 id="weekly-review-week">Week review</h2>
+          </div>
           <p id="supply-trend-note">Based on logged check-ins this week.</p>
         </div>
         <div class="supply-trend-grid" id="supply-trend-grid" aria-label="Weekly recovery trend"></div>
-      </section>
-
-      <section class="weekly-review" aria-labelledby="weekly-review-title">
-        <div>
-          <p class="panel-label" id="weekly-review-title">Week review</p>
-          <h2 id="weekly-review-week">This week</h2>
+        <div class="weekly-review">
           <p id="weekly-review-summary">A tiny reset point for what worked, what got in the way, and what to tweak next.</p>
+          <div class="weekly-review-grid" id="weekly-review-grid">
+            <div>
+              <span>Worked</span>
+              <strong>not reviewed yet</strong>
+            </div>
+            <div>
+              <span>Got in the way</span>
+              <strong>not reviewed yet</strong>
+            </div>
+            <div>
+              <span>Next tweak</span>
+              <strong>not reviewed yet</strong>
+            </div>
+          </div>
+          <button class="secondary-action" id="open-weekly-review-modal" type="button">
+            Add weekly review
+          </button>
         </div>
-        <div class="weekly-review-grid" id="weekly-review-grid">
-          <div>
-            <span>Worked</span>
-            <strong>not reviewed yet</strong>
-          </div>
-          <div>
-            <span>Got in the way</span>
-            <strong>not reviewed yet</strong>
-          </div>
-          <div>
-            <span>Next tweak</span>
-            <strong>not reviewed yet</strong>
-          </div>
-        </div>
-        <button class="secondary-action" id="open-weekly-review-modal" type="button">
-          Add weekly review
-        </button>
       </section>
 
       <section class="recovery-grid" aria-labelledby="daily-support-title">

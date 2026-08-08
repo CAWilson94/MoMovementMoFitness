@@ -890,24 +890,35 @@ h2 {
   min-width: 214px;
 }
 
-.supply-trend {
+.week-summary {
   display: grid;
-  grid-template-columns: minmax(180px, 0.32fr) minmax(0, 1fr);
   gap: 14px;
-  align-items: center;
   margin-bottom: 22px;
-  padding: 14px 16px;
+  padding: 18px;
   border: 1px solid var(--line);
   border-radius: var(--radius);
   background: var(--panel);
   box-shadow: var(--shadow-soft);
 }
 
-.supply-trend p {
+.week-summary-heading {
+  display: flex;
+  gap: 16px;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+
+.week-summary-heading h2 {
+  margin-top: 4px;
+  font-size: clamp(1.3rem, 2.5vw, 1.75rem);
+}
+
+.week-summary-heading p {
   margin-top: 6px;
   color: var(--muted);
   font-size: 0.9rem;
   font-weight: 600;
+  text-align: right;
 }
 
 .supply-trend-grid {
@@ -1047,26 +1058,16 @@ h2 {
 
 .weekly-review {
   display: grid;
-  grid-template-columns: minmax(180px, 0.32fr) minmax(0, 1fr) auto;
-  gap: 16px;
+  grid-template-columns: minmax(180px, 0.3fr) minmax(0, 1fr) auto;
+  gap: 14px;
   align-items: center;
-  margin-bottom: 22px;
-  padding: 18px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  background: var(--panel);
-  box-shadow: var(--shadow-soft);
-}
-
-.weekly-review h2 {
-  margin-top: 4px;
-  font-size: clamp(1.25rem, 2.5vw, 1.65rem);
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
 }
 
 .weekly-review p {
-  margin-top: 6px;
   color: var(--muted);
-  font-size: 0.9rem;
+  font-size: 0.86rem;
   font-weight: 600;
 }
 
@@ -1078,7 +1079,7 @@ h2 {
 
 .weekly-review-grid div {
   min-width: 0;
-  padding: 12px;
+  padding: 10px;
   border-radius: var(--radius-sm);
   background: var(--purple-soft);
 }
@@ -1098,7 +1099,7 @@ h2 {
 
 .weekly-review-grid strong {
   margin-top: 5px;
-  font-size: 0.92rem;
+  font-size: 0.86rem;
   line-height: 1.35;
 }
 
@@ -1444,7 +1445,7 @@ h2 {
 @media (max-width: 820px) {
   .masthead,
   .recovery-masthead,
-  .supply-trend,
+  .week-summary-heading,
   .weekly-review,
   .target-strip,
   .section-heading {
@@ -1457,10 +1458,18 @@ h2 {
     grid-template-columns: 1fr;
   }
 
-  .supply-trend,
+  .week-summary,
   .weekly-review,
   .recovery-masthead {
     grid-template-columns: 1fr;
+  }
+
+  .week-summary-heading {
+    align-items: flex-start;
+  }
+
+  .week-summary-heading p {
+    text-align: left;
   }
 
   .recovery-masthead-action {
