@@ -1,7 +1,8 @@
 {
   "startDate": "2026-08-10",
   "endDate": "2026-10-25",
-  "updatedAt": null,
+  "updatedAt": "2026-08-08T14:09:04.846Z",
+  "activities": [],
   "fetchFromDate": "2026-08-10",
-  "activities": []
+  "nextFetchEligibleDate": "2026-08-10"
 }
