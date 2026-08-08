@@ -916,21 +916,32 @@ h2 {
 .week-summary-heading {
   display: flex;
   gap: 16px;
-  align-items: flex-end;
+  align-items: flex-start;
   justify-content: space-between;
+}
+
+.week-summary-heading .panel-label {
+  text-align: left;
 }
 
 .week-summary-heading h2 {
   margin-top: 4px;
-  font-size: clamp(1.3rem, 2.5vw, 1.75rem);
+  font-size: clamp(1.05rem, 1.8vw, 1.35rem);
+  line-height: 1.15;
 }
 
-.week-summary-heading p {
-  margin-top: 6px;
-  color: var(--muted);
-  font-size: 0.9rem;
-  font-weight: 600;
+.week-summary-meta {
+  display: grid;
+  gap: 4px;
+  max-width: 360px;
+  padding-top: 2px;
   text-align: right;
+}
+
+.week-summary-meta p {
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 600;
 }
 
 .supply-trend-grid {
@@ -1076,17 +1087,11 @@ h2 {
 
 .weekly-review {
   display: grid;
-  grid-template-columns: minmax(180px, 0.3fr) minmax(0, 1fr) auto;
-  gap: 14px;
+  grid-template-columns: minmax(0, 3fr) minmax(170px, 1fr);
+  gap: 0;
   align-items: center;
   padding-top: 16px;
   border-top: 1px solid var(--line);
-}
-
-.weekly-review p {
-  color: var(--muted);
-  font-size: 0.86rem;
-  font-weight: 600;
 }
 
 .weekly-review-grid {
@@ -1124,6 +1129,8 @@ h2 {
 }
 
 .weekly-review .secondary-action {
+  justify-self: end;
+  margin-left: 12px;
   padding: 9px 12px;
   color: var(--pink-dark);
   border-color: rgba(238, 42, 123, 0.22);
