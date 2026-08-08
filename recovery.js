@@ -11,6 +11,57 @@ const BLOCK = {
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
 const DAILY_ANCHORS = 3;
 const STORAGE_KEY = "movementTrackerRecoveryEntries";
+const NOTE_STOP_WORDS = new Set([
+  "a",
+  "about",
+  "after",
+  "again",
+  "all",
+  "also",
+  "am",
+  "an",
+  "and",
+  "are",
+  "as",
+  "at",
+  "be",
+  "been",
+  "bit",
+  "but",
+  "by",
+  "can",
+  "could",
+  "day",
+  "did",
+  "do",
+  "for",
+  "from",
+  "had",
+  "have",
+  "i",
+  "im",
+  "in",
+  "is",
+  "it",
+  "just",
+  "like",
+  "me",
+  "my",
+  "not",
+  "of",
+  "on",
+  "or",
+  "so",
+  "that",
+  "the",
+  "this",
+  "to",
+  "today",
+  "too",
+  "very",
+  "was",
+  "with",
+]);
 
 const selectors = {
   dailyTitle: document.querySelector("#daily-support-title-text"),
@@ -21,6 +72,8 @@ const selectors = {
   latestNote: document.querySelector("#latest-recovery-note"),
   supplyTrend: document.querySelector("#supply-trend-grid"),
   supplyTrendNote: document.querySelector("#supply-trend-note"),
+  noteThemeCloud: document.querySelector("#note-theme-cloud"),
+  noteThemesSummary: document.querySelector("#note-themes-summary"),
   monthGrid: document.querySelector("#recovery-month-grid"),
   weekGrid: document.querySelector("#recovery-week-grid"),
   logList: document.querySelector("#recovery-log-list"),
@@ -402,6 +455,58 @@ function renderSupplyTrend(entries, weeks) {
   selectors.supplyTrend.append(bodyItem);
 }
 
+function noteWords(note) {
+  return note
+    .toLowerCase()
+    .replace(/['’]/g, "")
+    .split(/[^a-z]+/)
+    .filter((word) => word.length > 2 && !NOTE_STOP_WORDS.has(word));
+}
+
+function noteThemeCounts(entries) {
+  const counts = new Map();
+
+  for (const entry of entries) {
+    const words = noteWords(entry.note || "");
+    for (const word of words) {
+      counts.set(word, (counts.get(word) || 0) + 1);
+    }
+  }
+
+  return [...counts.entries()]
+    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+    .slice(0, 12);
+}
+
+function renderNoteThemes(entries, weeks) {
+  const activeWeek = getActiveWeek(weeks);
+  const weekEntries = entries.filter((entry) => isBetween(entry.date, activeWeek.startDate, activeWeek.endDate));
+  const notes = weekEntries.filter((entry) => entry.note?.trim());
+  const themes = noteThemeCounts(notes);
+
+  selectors.noteThemeCloud.textContent = "";
+  selectors.noteThemesSummary.textContent = notes.length
+    ? `${notes.length} note${notes.length === 1 ? "" : "s"} logged this week.`
+    : "Optional notes will turn into gentle themes here.";
+
+  if (!themes.length) {
+    selectors.noteThemeCloud.innerHTML = `
+      <span class="theme-empty">No note themes yet</span>
+    `;
+    return;
+  }
+
+  const maxCount = themes[0][1];
+  for (const [word, count] of themes) {
+    const chip = document.createElement("span");
+    const strength = count === maxCount ? "strong" : count > 1 ? "medium" : "light";
+    chip.className = `theme-chip is-${strength}`;
+    chip.textContent = word;
+    chip.title = `${word}: mentioned ${count} time${count === 1 ? "" : "s"} this week`;
+    selectors.noteThemeCloud.append(chip);
+  }
+}
+
 function barMarkup(label, done, target, variant) {
   const width = target ? Math.min((done / target) * 100, 100) : 0;
   return `
@@ -621,6 +726,7 @@ function renderPage() {
   const weeks = getWeeks();
 
   renderSupplyTrend(recoveryEntries, weeks);
+  renderNoteThemes(recoveryEntries, weeks);
   renderDaily(recoveryEntries);
   renderLatest(recoveryEntries);
   renderMonths(recoveryEntries);
