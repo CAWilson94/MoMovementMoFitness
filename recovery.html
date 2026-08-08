@@ -43,6 +43,9 @@
             A low-drama check-in for hydration, food consistency, sleep, and
             the tiny clues that training is being supported.
           </p>
+          <button class="primary-action" id="open-recovery-modal" type="button">
+            Add recovery check-in
+          </button>
         </div>
         <aside class="recovery-status-card" aria-label="Recovery status">
           <p class="panel-label">This week</p>
@@ -79,8 +82,8 @@
           <h2 id="latest-recovery-title">No entries yet</h2>
           <div class="context-grid" id="latest-recovery-context"></div>
           <p class="week-note" id="latest-recovery-note">
-            Add entries to <code>data/recovery-log.json</code> when you want the
-            page to start scoring the support habits.
+            Use the check-in button when you want the page to start scoring the
+            support habits.
           </p>
         </aside>
       </section>
@@ -110,9 +113,81 @@
       </section>
 
       <footer class="site-footer">
-        <p>Recovery entries live in <code>data/recovery-log.json</code>.</p>
+        <p>Recovery check-ins save in this browser. Seeded entries can also live in <code>data/recovery-log.json</code>.</p>
       </footer>
     </main>
+
+    <dialog class="modal" id="recovery-modal" aria-labelledby="recovery-modal-title">
+      <form class="modal-panel" id="recovery-form" method="dialog">
+        <div class="modal-heading">
+          <div>
+            <p class="panel-label">Recovery check-in</p>
+            <h2 id="recovery-modal-title">How supported was today?</h2>
+          </div>
+          <button class="icon-button" id="close-recovery-modal" type="button" aria-label="Close check-in">x</button>
+        </div>
+
+        <label class="field">
+          <span>Date</span>
+          <input id="checkin-date" name="date" type="date" min="2026-08-10" max="2026-10-25" required>
+        </label>
+
+        <fieldset class="choice-field">
+          <legend>Hydration</legend>
+          <label><input type="radio" name="hydration" value="low" required><span>Low</span></label>
+          <label><input type="radio" name="hydration" value="okay"><span>Okay</span></label>
+          <label><input type="radio" name="hydration" value="great"><span>Great</span></label>
+        </fieldset>
+
+        <div class="form-grid">
+          <label class="field">
+            <span>Meals</span>
+            <input name="meals" type="number" min="0" max="6" step="1" value="0">
+          </label>
+          <label class="toggle-field">
+            <input name="protein" type="checkbox">
+            <span>Protein showed up</span>
+          </label>
+          <label class="toggle-field">
+            <input name="foodConsistent" type="checkbox">
+            <span>Food felt consistent</span>
+          </label>
+        </div>
+
+        <fieldset class="choice-field">
+          <legend>Sleep/recovery</legend>
+          <label><input type="radio" name="sleep" value="rough" required><span>Rough</span></label>
+          <label><input type="radio" name="sleep" value="okay"><span>Okay</span></label>
+          <label><input type="radio" name="sleep" value="good"><span>Good</span></label>
+          <label><input type="radio" name="sleep" value="great"><span>Great</span></label>
+        </fieldset>
+
+        <div class="slider-grid">
+          <label class="range-field">
+            <span>Energy <strong id="energy-value">3</strong>/5</span>
+            <input name="energy" type="range" min="1" max="5" value="3">
+          </label>
+          <label class="range-field">
+            <span>Soreness <strong id="soreness-value">3</strong>/5</span>
+            <input name="soreness" type="range" min="1" max="5" value="3">
+          </label>
+          <label class="range-field">
+            <span>Stress <strong id="stress-value">3</strong>/5</span>
+            <input name="stress" type="range" min="1" max="5" value="3">
+          </label>
+        </div>
+
+        <label class="field">
+          <span>Optional note</span>
+          <textarea name="note" rows="3" placeholder="Anything useful?"></textarea>
+        </label>
+
+        <div class="modal-actions">
+          <button class="secondary-action" id="delete-recovery-entry" type="button">Delete day</button>
+          <button class="primary-action" type="submit">Save check-in</button>
+        </div>
+      </form>
+    </dialog>
 
     <script src="recovery.js" type="module"></script>
   </body>

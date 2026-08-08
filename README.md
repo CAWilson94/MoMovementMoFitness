@@ -46,6 +46,8 @@ Recovery check-ins live in `data/recovery-log.json` and power
 three: hydration, food consistency, and sleep/recovery. Weekly and monthly
 sections roll those anchors up so the trend is visible without turning recovery
 into homework. Energy, soreness, stress, and notes are shown as context.
+Check-ins added through the page are saved in the browser with `localStorage`;
+seeded/shared entries can still be committed in `data/recovery-log.json`.
 
 ```json
 {

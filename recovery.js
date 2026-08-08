@@ -10,6 +10,7 @@ const BLOCK = {
 
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
 const DAILY_ANCHORS = 3;
+const STORAGE_KEY = "movementTrackerRecoveryEntries";
 
 const selectors = {
   weekScore: document.querySelector("#recovery-week-score"),
@@ -25,7 +26,15 @@ const selectors = {
   logList: document.querySelector("#recovery-log-list"),
   logSummary: document.querySelector("#recovery-log-summary"),
   updatedLabel: document.querySelector("#recovery-updated-label"),
+  openModal: document.querySelector("#open-recovery-modal"),
+  closeModal: document.querySelector("#close-recovery-modal"),
+  modal: document.querySelector("#recovery-modal"),
+  form: document.querySelector("#recovery-form"),
+  deleteEntry: document.querySelector("#delete-recovery-entry"),
 };
+
+let recoveryEntries = [];
+let recoveryUpdatedAt = null;
 
 function asDate(dateString) {
   return new Date(`${dateString}T12:00:00`);
@@ -74,6 +83,30 @@ async function loadJson(path, fallback) {
   }
 }
 
+function todayString() {
+  return today().toISOString().slice(0, 10);
+}
+
+function defaultCheckInDate() {
+  const currentDay = todayString();
+  if (currentDay < BLOCK.startDate) return BLOCK.startDate;
+  if (currentDay > BLOCK.endDate) return BLOCK.endDate;
+  return currentDay;
+}
+
+function loadStoredEntries() {
+  try {
+    const entries = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+    return Array.isArray(entries) ? entries : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveStoredEntries(entries) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(entries, null, 2));
+}
+
 function normaliseEntry(entry) {
   return {
     date: entry.date,
@@ -91,7 +124,14 @@ function normaliseEntry(entry) {
 
 async function loadRecoveryEntries() {
   const data = await loadJson("data/recovery-log.json", { entries: [], updatedAt: null });
-  const entries = (data.entries || [])
+  const entriesByDate = new Map();
+
+  for (const entry of [...(data.entries || []), ...loadStoredEntries()]) {
+    const normalised = normaliseEntry(entry);
+    if (normalised.date) entriesByDate.set(normalised.date, normalised);
+  }
+
+  const entries = [...entriesByDate.values()]
     .map(normaliseEntry)
     .filter((entry) => entry.date && isBetween(entry.date, BLOCK.startDate, BLOCK.endDate))
     .sort((a, b) => (a.date < b.date ? 1 : -1));
@@ -142,8 +182,8 @@ function barMarkup(label, done, target, variant) {
 }
 
 function renderDaily(entries) {
-  const todayString = today().toISOString().slice(0, 10);
-  const entry = entries.find((item) => item.date === todayString) || entries[0];
+  const currentDay = todayString();
+  const entry = entries.find((item) => item.date === currentDay) || entries[0];
   selectors.dailyGrid.textContent = "";
 
   if (!entry) {
@@ -158,7 +198,7 @@ function renderDaily(entries) {
   }
 
   const score = scoreEntry(entry);
-  const isToday = entry.date === todayString;
+  const isToday = entry.date === currentDay;
   selectors.dailyTitle.textContent = `${score.total}/3 support anchors`;
   selectors.dailyNote.textContent = isToday
     ? "Today has been logged. Tiny sensible protagonist behaviour."
@@ -250,7 +290,7 @@ function renderWeeks(entries, weeks) {
   for (const week of weeks) {
     const summary = summarise(entries, week.startDate, week.endDate);
     const complete = summary.total >= summary.target * 0.75;
-    const current = isBetween(today().toISOString().slice(0, 10), week.startDate, week.endDate);
+    const current = isBetween(todayString(), week.startDate, week.endDate);
     const card = document.createElement("article");
     card.className = `week-card recovery-week-card${complete ? " is-complete" : ""}${current ? " is-current" : ""}`;
     card.innerHTML = `
@@ -297,20 +337,122 @@ function renderLog(entries) {
   }
 }
 
-async function init() {
-  const { entries, updatedAt } = await loadRecoveryEntries();
+function setChecked(name, value) {
+  const options = selectors.form.querySelectorAll(`[name="${name}"]`);
+  for (const option of options) {
+    option.checked = option.type === "radio" ? option.value === value : Boolean(value);
+  }
+}
+
+function updateRangeLabels() {
+  for (const name of ["energy", "soreness", "stress"]) {
+    const input = selectors.form.elements[name];
+    const label = document.querySelector(`#${name}-value`);
+    if (input && label) label.textContent = input.value;
+  }
+}
+
+function fillForm(entry, date = defaultCheckInDate()) {
+  selectors.form.reset();
+  selectors.form.elements.date.value = entry?.date || date;
+  selectors.form.elements.meals.value = entry?.meals ?? 0;
+  selectors.form.elements.energy.value = entry?.energy || 3;
+  selectors.form.elements.soreness.value = entry?.soreness || 3;
+  selectors.form.elements.stress.value = entry?.stress || 3;
+  selectors.form.elements.note.value = entry?.note || "";
+
+  setChecked("hydration", entry?.hydration || "");
+  setChecked("sleep", entry?.sleep || "");
+  selectors.form.elements.protein.checked = Boolean(entry?.protein);
+  selectors.form.elements.foodConsistent.checked = Boolean(entry?.foodConsistent);
+  selectors.deleteEntry.hidden = !entry?.date || !entryForDate(entry.date);
+  updateRangeLabels();
+}
+
+function entryForDate(date) {
+  return recoveryEntries.find((entry) => entry.date === date);
+}
+
+function openCheckIn(date = defaultCheckInDate()) {
+  fillForm(entryForDate(date) || { date });
+  selectors.modal.showModal();
+}
+
+function saveEntryFromForm() {
+  const formData = new FormData(selectors.form);
+  const entry = normaliseEntry({
+    date: formData.get("date"),
+    hydration: formData.get("hydration"),
+    meals: formData.get("meals"),
+    foodConsistent: formData.has("foodConsistent"),
+    protein: formData.has("protein"),
+    sleep: formData.get("sleep"),
+    energy: formData.get("energy"),
+    soreness: formData.get("soreness"),
+    stress: formData.get("stress"),
+    note: formData.get("note"),
+  });
+
+  const stored = loadStoredEntries().filter((item) => item.date !== entry.date);
+  stored.push(entry);
+  saveStoredEntries(stored.sort((a, b) => (a.date < b.date ? 1 : -1)));
+}
+
+function deleteEntryForDate(date) {
+  saveStoredEntries(loadStoredEntries().filter((entry) => entry.date !== date));
+}
+
+function renderPage() {
   const weeks = getWeeks();
 
-  renderDaily(entries);
-  renderCurrentWeek(entries, weeks);
-  renderLatest(entries);
-  renderMonths(entries);
-  renderWeeks(entries, weeks);
-  renderLog(entries);
+  renderDaily(recoveryEntries);
+  renderCurrentWeek(recoveryEntries, weeks);
+  renderLatest(recoveryEntries);
+  renderMonths(recoveryEntries);
+  renderWeeks(recoveryEntries, weeks);
+  renderLog(recoveryEntries);
 
-  selectors.updatedLabel.textContent = updatedAt
-    ? `Updated ${new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }).format(new Date(updatedAt))}`
-    : "Ready for first recovery logs";
+  selectors.updatedLabel.textContent = recoveryUpdatedAt
+    ? `Seed data updated ${new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }).format(new Date(recoveryUpdatedAt))}`
+    : "Browser check-ins save instantly";
+}
+
+async function refreshEntries() {
+  const { entries, updatedAt } = await loadRecoveryEntries();
+  recoveryEntries = entries;
+  recoveryUpdatedAt = updatedAt;
+  renderPage();
+}
+
+function bindForm() {
+  selectors.openModal.addEventListener("click", () => openCheckIn());
+  selectors.closeModal.addEventListener("click", () => selectors.modal.close());
+
+  selectors.form.elements.date.addEventListener("change", (event) => {
+    fillForm(entryForDate(event.target.value) || { date: event.target.value });
+  });
+
+  for (const name of ["energy", "soreness", "stress"]) {
+    selectors.form.elements[name].addEventListener("input", updateRangeLabels);
+  }
+
+  selectors.form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    saveEntryFromForm();
+    selectors.modal.close();
+    await refreshEntries();
+  });
+
+  selectors.deleteEntry.addEventListener("click", async () => {
+    deleteEntryForDate(selectors.form.elements.date.value);
+    selectors.modal.close();
+    await refreshEntries();
+  });
+}
+
+async function init() {
+  bindForm();
+  await refreshEntries();
 }
 
 init();
