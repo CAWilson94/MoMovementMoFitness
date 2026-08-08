@@ -22,6 +22,11 @@ The fetcher currently counts Strava `Run` and `TrailRun` as runs, and
 `WeightTraining` and `Workout` as gym sessions. Cycling is shown as bonus
 activity and does not count toward the 55-session gym/run target.
 
+Each fetch stays inside the campaign range, `2026-08-10` to `2026-10-25`.
+After the first successful fetch, the script starts from the latest saved
+activity date, with a one-day overlap to catch same-day uploads or edits, then
+merges by Strava activity ID.
+
 Extra sessions can still be logged manually in `data/manual-sessions.json`:
 
 ```json

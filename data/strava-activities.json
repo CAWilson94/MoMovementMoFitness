@@ -2,5 +2,6 @@
   "startDate": "2026-08-10",
   "endDate": "2026-10-25",
   "updatedAt": null,
+  "fetchFromDate": "2026-08-10",
   "activities": []
 }

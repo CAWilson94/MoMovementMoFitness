@@ -1,6 +1,6 @@
 // Fetches campaign activities from Strava and writes data/strava-activities.json.
 
-import { writeFile } from "node:fs/promises";
+import { readFile, writeFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
@@ -109,6 +109,54 @@ function activityUrl(activity) {
   return activity.activity_url || `https://www.strava.com/activities/${activity.id}`;
 }
 
+async function readExistingPayload(startDate, endDate) {
+  try {
+    const raw = await readFile(OUTPUT_PATH, "utf8");
+    const payload = JSON.parse(raw);
+    return {
+      startDate,
+      endDate,
+      updatedAt: payload.updatedAt || null,
+      activities: Array.isArray(payload.activities) ? payload.activities : [],
+    };
+  } catch {
+    return {
+      startDate,
+      endDate,
+      updatedAt: null,
+      activities: [],
+    };
+  }
+}
+
+function latestActivityDate(activities, startDate, endDate) {
+  return activities
+    .map((activity) => activity.date)
+    .filter((date) => date && date >= startDate && date <= endDate)
+    .sort()
+    .at(-1);
+}
+
+function fetchStartDate(existingActivities, startDate, endDate) {
+  const latestDate = latestActivityDate(existingActivities, startDate, endDate);
+  if (!latestDate) return startDate;
+
+  const previousDay = new Date(`${latestDate}T12:00:00Z`);
+  previousDay.setUTCDate(previousDay.getUTCDate() - 1);
+  return previousDay.toISOString().slice(0, 10);
+}
+
+function mergeSessions(existingSessions, fetchedSessions, startDate, endDate) {
+  const sessionsById = new Map();
+
+  for (const session of [...existingSessions, ...fetchedSessions]) {
+    if (!session.id || !session.date || session.date < startDate || session.date > endDate) continue;
+    sessionsById.set(String(session.id), session);
+  }
+
+  return [...sessionsById.values()].sort((a, b) => (a.date < b.date ? 1 : -1));
+}
+
 function toRun(activity) {
   return {
     id: activity.id,
@@ -157,7 +205,9 @@ function toSession(activity) {
 
 async function main() {
   const { startDate, endDate } = CONFIG;
-  const afterEpoch = Math.floor(new Date(`${startDate}T00:00:00Z`).getTime() / 1000) - 86400;
+  const existingPayload = await readExistingPayload(startDate, endDate);
+  const fromDate = fetchStartDate(existingPayload.activities, startDate, endDate);
+  const afterEpoch = Math.floor(new Date(`${fromDate}T00:00:00Z`).getTime() / 1000);
   const beforeEpoch = Math.floor(new Date(`${endDate}T23:59:59Z`).getTime() / 1000) + 86400;
 
   const accessToken = await getAccessToken();
@@ -176,15 +226,20 @@ async function main() {
     .filter(Boolean)
     .sort((a, b) => (a.date < b.date ? 1 : -1));
 
+  const mergedSessions = mergeSessions(existingPayload.activities, sessions, startDate, endDate);
+
   const payload = {
     startDate,
     endDate,
     updatedAt: new Date().toISOString(),
-    activities: sessions,
+    fetchFromDate: fromDate,
+    activities: mergedSessions,
   };
 
   await writeFile(OUTPUT_PATH, `${JSON.stringify(payload, null, 2)}\n`, "utf8");
-  console.log(`Wrote ${sessions.length} Strava sessions to data/strava-activities.json`);
+  console.log(
+    `Fetched ${sessions.length} Strava sessions from ${fromDate}; wrote ${mergedSessions.length} total sessions to data/strava-activities.json`,
+  );
 }
 
 main().catch((error) => {
