@@ -79,16 +79,45 @@ function round(value, decimals = 0) {
   return Math.round(value * factor) / factor;
 }
 
+function activityDate(activity) {
+  if (activity.start_date_local) return activity.start_date_local.slice(0, 10);
+  if (activity.start_time) return activity.start_time.slice(0, 10);
+  if (activity.start_date_local_raw) {
+    return new Date(Number(activity.start_date_local_raw) * 1000).toISOString().slice(0, 10);
+  }
+  if (activity.start_date && activity.start_date.includes("-")) return activity.start_date.slice(0, 10);
+  throw new Error(`Activity ${activity.id} is missing a usable start date`);
+}
+
+function parseDuration(value) {
+  if (typeof value === "number") return value;
+  if (typeof value !== "string") return 0;
+  if (!value.includes(":")) return Number(value) || 0;
+
+  return value
+    .split(":")
+    .map(Number)
+    .reduce((total, part) => total * 60 + part, 0);
+}
+
+function activitySeconds(activity, key, fallbackKey) {
+  return parseDuration(activity[`${key}_raw`] || activity[key] || activity[`${fallbackKey}_raw`] || activity[fallbackKey]);
+}
+
+function activityUrl(activity) {
+  return activity.activity_url || `https://www.strava.com/activities/${activity.id}`;
+}
+
 function toRun(activity) {
   return {
     id: activity.id,
     title: activity.name || "Run",
-    date: activity.start_date_local.slice(0, 10),
+    date: activityDate(activity),
     type: "run",
     distanceMiles: round(activity.distance / METRES_PER_MILE, 1),
-    movingSeconds: activity.moving_time || 0,
+    movingSeconds: activitySeconds(activity, "moving_time", "elapsed_time"),
     source: "strava",
-    url: `https://www.strava.com/activities/${activity.id}`,
+    url: activityUrl(activity),
   };
 }
 
@@ -96,11 +125,11 @@ function toGym(activity) {
   return {
     id: activity.id,
     title: activity.name || "Gym session",
-    date: activity.start_date_local.slice(0, 10),
+    date: activityDate(activity),
     type: "gym",
-    movingSeconds: activity.moving_time || activity.elapsed_time || 0,
+    movingSeconds: activitySeconds(activity, "moving_time", "elapsed_time"),
     source: "strava",
-    url: `https://www.strava.com/activities/${activity.id}`,
+    url: activityUrl(activity),
   };
 }
 
@@ -122,7 +151,7 @@ async function main() {
   const sessions = activities
     .filter((activity) => RUN_TYPES.has(activity.sport_type || activity.type) || GYM_TYPES.has(activity.sport_type || activity.type))
     .filter((activity) => {
-      const day = activity.start_date_local.slice(0, 10);
+      const day = activityDate(activity);
       return day >= startDate && day <= endDate;
     })
     .map(toSession)
