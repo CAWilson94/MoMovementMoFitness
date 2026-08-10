@@ -3,11 +3,12 @@
 A small static site for tracking the 10 August to 25 October 2026 training
 block, with 26 October treated as a review/reset day:
 
-- 2 gym sessions per week
-- 3 runs per week
+- 2 gym sessions per week throughout
+- 2 runs per week for Weeks 1-5
+- 3 runs per week for Weeks 6-11
 - 22 gym sessions total
-- 33 runs total
-- 55 target movement sessions
+- 28 runs total
+- 50 target movement sessions
 - cycling visible as bonus activity when it exists
 
 The dashboard shows progress for the whole block, each month, and each week.
@@ -20,7 +21,7 @@ Runs, gym sessions, and rides can be fetched from Strava into
 `data/strava-activities.json` by the workflow in `.github/workflows/strava.yml`.
 The fetcher currently counts Strava `Run` and `TrailRun` as runs, and
 `WeightTraining` and `Workout` as gym sessions. Cycling is shown as bonus
-activity and does not count toward the 55-session gym/run target.
+activity and does not count toward the 50-session gym/run target.
 
 Each fetch stays inside the campaign range, `2026-08-10` to `2026-10-25`.
 After the first successful fetch, the script starts from the latest saved

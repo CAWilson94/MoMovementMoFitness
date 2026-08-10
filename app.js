@@ -1,13 +1,29 @@
 const BLOCK = {
   startDate: "2026-08-10",
   endDate: "2026-10-25",
-  weeklyGymTarget: 2,
-  weeklyRunTarget: 3,
   totalGymTarget: 22,
-  totalRunTarget: 33,
+  totalRunTarget: 28,
+  phases: [
+    {
+      startWeek: 1,
+      endWeek: 5,
+      name: "Build",
+      label: "Strength + power build",
+      gymTarget: 2,
+      runTarget: 2,
+    },
+    {
+      startWeek: 6,
+      endWeek: 11,
+      name: "Cardio",
+      label: "Strength maintenance + cardio",
+      gymTarget: 2,
+      runTarget: 3,
+    },
+  ],
   months: [
-    { name: "August", startDate: "2026-08-10", endDate: "2026-08-30", gym: 6, runs: 9 },
-    { name: "September", startDate: "2026-08-31", endDate: "2026-10-04", gym: 10, runs: 15 },
+    { name: "August", startDate: "2026-08-10", endDate: "2026-08-30", gym: 6, runs: 6 },
+    { name: "September", startDate: "2026-08-31", endDate: "2026-10-04", gym: 10, runs: 13 },
     { name: "October", startDate: "2026-10-05", endDate: "2026-10-25", gym: 6, runs: 9 },
   ],
 };
@@ -23,6 +39,7 @@ const selectors = {
   runDone: document.querySelector("#run-done"),
   rings: document.querySelector(".rings"),
   currentWeekTitle: document.querySelector("#current-week-title"),
+  currentPhaseLabel: document.querySelector("#current-phase-label"),
   currentWeekNote: document.querySelector("#current-week-note"),
   miniGoals: document.querySelector("#mini-goals"),
   weekGym: document.querySelector("#week-gym"),
@@ -65,14 +82,20 @@ function formatDuration(totalSeconds) {
 
 function getWeeks() {
   return Array.from({ length: 11 }, (_, index) => {
+    const weekIndex = index + 1;
+    const phase = BLOCK.phases.find(
+      (item) => weekIndex >= item.startWeek && weekIndex <= item.endWeek,
+    );
     const start = new Date(asDate(BLOCK.startDate).getTime() + index * 7 * MS_PER_DAY);
     const end = new Date(start.getTime() + 6 * MS_PER_DAY);
     return {
-      index: index + 1,
+      index: weekIndex,
       startDate: start.toISOString().slice(0, 10),
       endDate: end.toISOString().slice(0, 10),
-      gymTarget: BLOCK.weeklyGymTarget,
-      runTarget: BLOCK.weeklyRunTarget,
+      phaseName: phase.name,
+      phaseLabel: phase.label,
+      gymTarget: phase.gymTarget,
+      runTarget: phase.runTarget,
     };
   });
 }
@@ -288,6 +311,7 @@ function renderCurrentWeek(sessions, weeks) {
   const total = gym + runs;
   const met = gym >= activeWeek.gymTarget && runs >= activeWeek.runTarget;
 
+  selectors.currentPhaseLabel.textContent = `This week · ${activeWeek.phaseLabel}`;
   selectors.currentWeekTitle.textContent = `Week ${activeWeek.index}: ${formatDate(activeWeek.startDate)} - ${formatDate(activeWeek.endDate)}`;
   selectors.miniGoals.innerHTML = `
     <div>
@@ -372,9 +396,10 @@ function renderWeeks(sessions, weeks) {
     card.innerHTML = `
       <strong>Week ${week.index}</strong>
       <small>${formatDate(week.startDate)} - ${formatDate(week.endDate)}</small>
-      <div class="week-dots${rides ? " has-rides" : ""}" aria-label="${gym} gym sessions, ${runs} runs, and ${rides} rides logged">
-        ${dotMarkup(gym, 2, "gym")}
-        ${dotMarkup(runs, 3, "run")}
+      <span class="week-phase">${week.phaseName}</span>
+      <div class="week-dots${rides ? " has-rides" : ""}" style="--week-target: ${week.gymTarget + week.runTarget}" aria-label="${gym} of ${week.gymTarget} gym sessions, ${runs} of ${week.runTarget} runs, and ${rides} rides logged">
+        ${dotMarkup(gym, week.gymTarget, "gym")}
+        ${dotMarkup(runs, week.runTarget, "run")}
         ${dotMarkup(rides, rides, "ride")}
       </div>
     `;

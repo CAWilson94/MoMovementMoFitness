@@ -867,9 +867,20 @@ h2 {
   line-height: 1.25;
 }
 
+.week-phase {
+  display: block;
+  margin-top: 8px;
+  color: var(--pink-dark);
+  font-size: 0.6rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
 .week-dots {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(var(--week-target, 5), 1fr);
   gap: 4px;
   margin-top: 12px;
 }
