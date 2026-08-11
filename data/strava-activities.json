@@ -1,12 +1,12 @@
 {
   "startDate": "2026-08-10",
   "endDate": "2026-10-25",
-  "updatedAt": "2026-08-10T19:59:23.331Z",
-  "fetchFromDate": "2026-08-10",
+  "updatedAt": "2026-08-11T02:17:35.683Z",
+  "fetchFromDate": "2026-08-09",
   "activities": [
     {
       "id": 19686254449,
-      "title": "Weight Training",
+      "title": "Evening Weight Training",
       "date": "2026-08-10",
       "type": "gym",
       "movingSeconds": 5610,
