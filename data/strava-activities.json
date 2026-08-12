@@ -1,9 +1,19 @@
 {
   "startDate": "2026-08-10",
   "endDate": "2026-10-25",
-  "updatedAt": "2026-08-11T19:12:51.820Z",
+  "updatedAt": "2026-08-12T02:32:40.297Z",
   "fetchFromDate": "2026-08-09",
   "activities": [
+    {
+      "id": 19700975219,
+      "title": "Evening Run",
+      "date": "2026-08-11",
+      "type": "run",
+      "distanceMiles": 2.5,
+      "movingSeconds": 1806,
+      "source": "strava",
+      "url": "https://www.strava.com/activities/19700975219"
+    },
     {
       "id": 19686254449,
       "title": "Evening Weight Training",
