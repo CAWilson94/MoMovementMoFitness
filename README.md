@@ -29,6 +29,9 @@ activity date, with a one-day overlap to catch same-day uploads or edits, then
 merges by Strava activity ID.
 If the workflow runs before the campaign starts, it records that there is
 nothing to fetch yet and exits successfully.
+When new activity data is committed, the Strava workflow calls the Pages
+deployment workflow so the live dashboard refreshes automatically. Runs with
+no data changes skip the deployment.
 
 Extra sessions can still be logged manually in `data/manual-sessions.json`:
 
