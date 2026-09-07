@@ -1,9 +1,18 @@
 {
   "startDate": "2026-08-10",
   "endDate": "2026-10-25",
-  "updatedAt": "2026-09-07T12:15:55.434Z",
+  "updatedAt": "2026-09-07T21:25:29.307Z",
   "fetchFromDate": "2026-09-03",
   "activities": [
+    {
+      "id": 20078035765,
+      "title": "Evening Weight Training",
+      "date": "2026-09-07",
+      "type": "gym",
+      "movingSeconds": 4098,
+      "source": "strava",
+      "url": "https://www.strava.com/activities/20078035765"
+    },
     {
       "id": 20031118391,
       "title": "Morning Weight Training",
