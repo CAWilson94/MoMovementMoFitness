@@ -1,9 +1,18 @@
 {
   "startDate": "2026-08-10",
   "endDate": "2026-10-25",
-  "updatedAt": "2026-09-21T18:22:53.062Z",
+  "updatedAt": "2026-09-22T00:51:31.555Z",
   "fetchFromDate": "2026-09-19",
   "activities": [
+    {
+      "id": 20272318003,
+      "title": "Evening Weight Training",
+      "date": "2026-09-21",
+      "type": "gym",
+      "movingSeconds": 5532,
+      "source": "strava",
+      "url": "https://www.strava.com/activities/20272318003"
+    },
     {
       "id": 20254396184,
       "title": "Lunch Weight Training",
