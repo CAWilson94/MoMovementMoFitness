@@ -1,9 +1,19 @@
 {
   "startDate": "2026-08-10",
   "endDate": "2026-10-25",
-  "updatedAt": "2026-09-30T12:34:15.024Z",
+  "updatedAt": "2026-09-30T18:24:47.652Z",
   "fetchFromDate": "2026-09-25",
   "activities": [
+    {
+      "id": 20392321167,
+      "title": "Treadmill intervals",
+      "date": "2026-09-30",
+      "type": "run",
+      "distanceMiles": 2.8,
+      "movingSeconds": 2129,
+      "source": "strava",
+      "url": "https://www.strava.com/activities/20392321167"
+    },
     {
       "id": 20332611972,
       "title": "Morning Weight Training",
