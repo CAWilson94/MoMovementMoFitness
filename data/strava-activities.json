@@ -1,9 +1,18 @@
 {
   "startDate": "2026-08-10",
   "endDate": "2026-10-25",
-  "updatedAt": "2026-10-02T18:25:40.664Z",
+  "updatedAt": "2026-10-03T00:52:08.961Z",
   "fetchFromDate": "2026-09-29",
   "activities": [
+    {
+      "id": 20423667624,
+      "title": "Afternoon Weight Training",
+      "date": "2026-10-02",
+      "type": "gym",
+      "movingSeconds": 6914,
+      "source": "strava",
+      "url": "https://www.strava.com/activities/20423667624"
+    },
     {
       "id": 20392321167,
       "title": "Treadmill intervals",
