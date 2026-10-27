@@ -1,9 +1,45 @@
 {
   "startDate": "2026-08-10",
   "endDate": "2026-10-25",
-  "updatedAt": "2026-10-26T18:30:17.738Z",
+  "updatedAt": "2026-10-27T00:49:37.213Z",
   "fetchFromDate": "2026-10-07",
   "activities": [
+    {
+      "id": 20742986678,
+      "title": "Evening Weight Training",
+      "date": "2026-10-24",
+      "type": "gym",
+      "movingSeconds": 6436,
+      "source": "strava",
+      "url": "https://www.strava.com/activities/20742986678"
+    },
+    {
+      "id": 20742981239,
+      "title": "Evening Weight Training",
+      "date": "2026-10-21",
+      "type": "gym",
+      "movingSeconds": 5629,
+      "source": "strava",
+      "url": "https://www.strava.com/activities/20742981239"
+    },
+    {
+      "id": 20742981244,
+      "title": "Evening Weight Training",
+      "date": "2026-10-19",
+      "type": "gym",
+      "movingSeconds": 7832,
+      "source": "strava",
+      "url": "https://www.strava.com/activities/20742981244"
+    },
+    {
+      "id": 20742975862,
+      "title": "Evening Weight Training",
+      "date": "2026-10-14",
+      "type": "gym",
+      "movingSeconds": 6548,
+      "source": "strava",
+      "url": "https://www.strava.com/activities/20742975862"
+    },
     {
       "id": 20507390092,
       "title": "Evening Weight Training",
